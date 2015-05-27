@@ -1,6 +1,6 @@
-<?php echo "PocketMine-MP plugin HungerGames v1.2\nThis file has been generated using DevTools v1.10.0 at Tue, 26 May 2015 20:12:04 -0800\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER(); ?>
-W             ô   a:9:{s:4:"name";s:11:"HungerGames";s:7:"version";s:3:"1.2";s:4:"main";s:7:"HG\Main";s:3:"api";a:1:{i:0;s:5:"1.0.0";}s:6:"depend";a:0:{}s:11:"description";N;s:7:"authors";a:1:{i:0;s:7:"a k i d";}s:7:"website";N;s:12:"creationDate";i:1432699924;}
-   plugin.yml*  DeU*  ¬7HW¶         src/HG/Main.php[s  DeU[s  :¨¶      name: HungerGames
+<?php echo "PocketMine-MP plugin HungerGames v1.2\nThis file has been generated using DevTools v1.10.0 at Wed, 27 May 2015 03:38:35 -0800\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER(); ?>
+W             ô   a:9:{s:4:"name";s:11:"HungerGames";s:7:"version";s:3:"1.2";s:4:"main";s:7:"HG\Main";s:3:"api";a:1:{i:0;s:5:"1.0.0";}s:6:"depend";a:0:{}s:11:"description";N;s:7:"authors";a:1:{i:0;s:7:"a k i d";}s:7:"website";N;s:12:"creationDate";i:1432726715;}
+   plugin.yml*  ¼¬eU*  ¬7HW¶         src/HG/Main.phpÆs  ¼¬eUÆs  æ)à¶      name: HungerGames
 main: HG\Main
 version: "1.2"
 api: [1.0.0]
@@ -110,6 +110,8 @@ class Main extends PluginBase implements Listener
 			$this->pos6=new Vector3($this->pos6["x"]+0.5,$this->pos6["y"],$this->pos6["z"]+0.5);
 			$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 			$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
+			$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
+			$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
 			$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 		}
 		if(!$this->config->exists("endTime"))
@@ -156,8 +158,8 @@ class Main extends PluginBase implements Listener
 				unset($this->players[$sender->getName()]);
 				$sender->setLevel($this->signlevel);
 				$sender->teleport($this->signlevel->getSpawnLocation());
-				$sender->sendMessage("[SurvivalGame] Back to lobby...");
-				$this->sendToAll("[SurvivalGame] Player ".$sender->getName()." exit from game");
+				$sender->sendMessage("[HG] Back to lobby...");
+				$this->sendToAll("[HG] Player " .$sender->getName(). " exit from game");
 				$this->changeStatusSign();
 				if($this->gameStatus==1 && count($this->players)<2)
 				{
@@ -204,9 +206,11 @@ class Main extends PluginBase implements Listener
 			$this->config->remove("pos6");
 			$this->config->remove("pos7");
 			$this->config->remove("pos8");
+			$this->config->remove("pos9");
+			$this->config->remove("pos10");
 			$this->config->remove("lastpos");
 			$this->config->save();
-			unset($this->sign,$this->pos1,$this->pos2,$this->pos3,$this->pos4,$this->pos5,$this->pos6,$this->pos7,$this->pos8,$this->lastpos);
+			unset($this->sign,$this->pos1,$this->pos2,$this->pos3,$this->pos4,$this->pos5,$this->pos6,$this->pos7,$this->pos8,$this->pos9,$this->pos10,$this->lastpos);
 			$sender->sendMessage("[HG] succeeded in deleting game settings");
 			break;
 		case "start":
@@ -229,6 +233,8 @@ class Main extends PluginBase implements Listener
 				$this->pos6=$this->config->get("pos6");
 				$this->pos7=$this->config->get("pos7");
 				$this->pos8=$this->config->get("pos8");
+				$this->pos8=$this->config->get("pos9");
+				$this->pos8=$this->config->get("pos10");
 				$this->lastpos=$this->config->get("lastpos");
 				$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
 				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
@@ -241,6 +247,8 @@ class Main extends PluginBase implements Listener
 				$this->pos6=new Vector3($this->pos6["x"]+0.5,$this->pos6["y"],$this->pos6["z"]+0.5);
 				$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
+				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
+				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
 				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 			}
 			if(!$this->config->exists("endTime"))
@@ -259,15 +267,15 @@ class Main extends PluginBase implements Listener
 			{
 				$this->config->set("godTime",15);
 			}
-			$this->endTime=(int)$this->config->get("endTime");//æ¸¸æˆæ—¶é—´
-			$this->gameTime=(int)$this->config->get("gameTime");//æ¸¸æˆæ—¶é—´
-			$this->waitTime=(int)$this->config->get("waitTime");//ç­‰å¾…æ—¶é—´
-			$this->godTime=(int)$this->config->get("godTime");//æ— æ•Œæ—¶é—´
-			$this->gameStatus=0;//å½“å‰çŠ¶æ€
-			$this->lastTime=0;//è¿˜æ²¡å¼€å§‹
-			$this->players=array();//åŠ å…¥æ¸¸æˆçš„çŽ©å®¶
-			$this->SetStatus=array();//è®¾ç½®çŠ¶æ€
-			$this->all=0;//æœ€å¤§çŽ©å®¶æ•°é‡
+			$this->endTime=(int)$this->config->get("endTime");
+			$this->gameTime=(int)$this->config->get("gameTime");
+			$this->waitTime=(int)$this->config->get("waitTime");
+			$this->godTime=(int)$this->config->get("godTime");
+			$this->gameStatus=0;
+			$this->lastTime=0;
+			$this->players=array();
+			$this->SetStatus=array();
+			$this->all=0;
 			$this->config->save();
 			$sender->sendMessage("[HG] Config reloaded");
 			break;
@@ -278,19 +286,15 @@ class Main extends PluginBase implements Listener
 		return true;
 	}
 	
-	public function onPlayerRespawn(PlayerRespawnEvent $event){
+	/* public function onPlayerRespawn(PlayerRespawnEvent $event){
         $player = $event->getPlayer();
         if($this->config->exists("lastpos"))
         {
-			if($player->getLevel()->getServer()==$this->level->getFolderName())
-			{
 				$v3=$this->signlevel->getSpawnLocation();
 				$event->setRespawnPosition(new Position($v3->x,$v3->y,$v3->z,$this->signlevel));
 			}
 		}
-		unset($event,$player);
-    }
-	
+	*/
 	public function onPlace(BlockPlaceEvent $event)
 	{
 		if(!isset($this->sign))
@@ -329,7 +333,7 @@ class Main extends PluginBase implements Listener
 		{
 			return;
 		}
-		$sign=$this->config->get("sign");
+		$sign = $this->config->get("sign");
 		$block=$event->getBlock();
 		if($this->PlayerIsInGame($event->getPlayer()->getName()) || ($block->getX()==$sign["x"] && $block->getY()==$sign["y"] && $block->getZ()==$sign["z"] && $block->getLevel()->getFolderName()==$sign["level"]) || $block->getLevel()==$this->level)
 		{
@@ -356,14 +360,14 @@ class Main extends PluginBase implements Listener
 			break;
 		default:
 			$event->setCancelled();
-			$event->getPlayer()->sendMessage("[HG] You Are Now IN The Game You Cannot Use Commands Besides...");
+			$event->getPlayer()->sendMessage("[HG] You Are Now In The Game You Cannot Use Commands Besides...");
 			$event->getPlayer()->sendMessage("[HG] /kill or /lobby to exit game");
 			break;
 		}
 		unset($event);
 	}
 	
-	public function onDamage(EntityDamageEvent $event)
+	/* public function onDamage(EntityDamageEvent $event)
 	{
 		$player = $event->getEntity();
 		if ($event instanceof EntityDamageByEntityEvent)
@@ -379,14 +383,14 @@ class Main extends PluginBase implements Listener
 		    	if($this->PlayerIsInGame($player->getName()) && !$this->PlayerIsInGame($killer->getName()) && !$killer->isOp())
 		    	{
 		    		$event->setCancelled();
-		    		$killer->sendMessage("[HG]Cannot Attack Yet ");
+		    		$killer->sendMessage("//ADD money for playerdeathevent");
 		    		$killer->kill();
 		    	}
 		    }
 		}
 		
 		unset($player,$killer,$event);
-	}
+	} */
 	
 	public function PlayerIsInGame($name)
 	{
@@ -403,8 +407,8 @@ class Main extends PluginBase implements Listener
 				if(count($this->players)>1)
 				{
 					$this->sendToAll("[HG] Player {$event->getEntity()->getName()} died");
-				$this->sendToAll("[HG] Players :".count($this->players));
-					$this->sendToAll("[HG] Time Left :".$this->lastTime." seconds");
+				$this->sendToAll("[HG] Players Left " .count($this->players));
+					$this->sendToAll("[HG] Time Left  ".$this->lastTime." seconds");
 				}
 				$this->changeStatusSign();
 			}
@@ -428,8 +432,8 @@ class Main extends PluginBase implements Listener
 		}
 		if(!$this->signlevel instanceof Level)
 		{
-			$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
-			$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
+			$this->level = $this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
+			$this->signlevel = $this->getServer()->getLevelByName($this->config->get("sign")["level"]);
 			if(!$this->signlevel instanceof Level)
 			{
 				return;
@@ -444,7 +448,7 @@ class Main extends PluginBase implements Listener
 				$i++;
 				$p=$this->getServer()->getPlayer($val["id"]);
 				//echo($i."\n");
-				$p->setLevel($this->level);
+				//$p->setLevel($this->level);
 				eval("\$p->teleport(\$this->pos".$i.");");
 				unset($p);
 			}
@@ -458,7 +462,7 @@ class Main extends PluginBase implements Listener
 				$i++;
 				$p=$this->getServer()->getPlayer($val["id"]);
 				//echo($i."\n");
-				$p->setLevel($this->level);
+				//$p->setLevel($this->level);
 				eval("\$p->teleport(\$this->pos".$i.");");
 				unset($p);
 			}
@@ -470,9 +474,11 @@ class Main extends PluginBase implements Listener
 			case 4:
 			case 5:
 			case 10:
-			//case 20:
+			case 20:
+			$this->sendToAll("[HG] The match is beginning");
+				break;
 			case 30:
-				$this->sendToAll("[HG] The game will start in ".$this->lastTime." seconds");
+				$this->sendToAll("[HG] The game will start in " .$this->lastTime. " seconds");
 				break;
 			case 60:
 				$this->sendToAll(" [HG] The game will start in one minute");
@@ -489,7 +495,8 @@ class Main extends PluginBase implements Listener
 			case 0:
 				$this->gameStatus=2;
 				$this->sendToAll("[HG] THE GAMES HAVE BEGUN");
-				$this->lastTime=$this->godTime;
+				$this->sendToAll("[HG] Chest Have Been Filled!");
+				$this->lastTime = $this->godTime;
 				$this->resetChest();
 				foreach($this->players as $key=>$val)
 				{
@@ -568,7 +575,7 @@ class Main extends PluginBase implements Listener
 					unset($p,$pl);
 				}
 				$this->gameStatus=4;
-				$this->lastTime=$this->endTime;
+				$this->lastTime = $this->gameTime;
 				break;
 			}
 		}
@@ -610,21 +617,7 @@ class Main extends PluginBase implements Listener
 		}
 		$this->changeStatusSign();
 	}
-	
-	public function getMoney($name){
-		return EconomyAPI::getInstance()->myMoney($name);
-	}
-	
-	public function addMoney($name,$money){
-		EconomyAPI::getInstance()->addMoney($name,$money);
-		unset($name,$money);
-	}
-	
-	public function setMoney($name,$money){
-		EconomyAPI::getInstance()->setMoney($name,$money);
-		unset($name,$money);
-	}
-	
+
 	public function resetChest()
 	{
 		ResetChest::getInstance()->ResetChest();
@@ -868,7 +861,7 @@ class Main extends PluginBase implements Listener
 						}
 						if(count($this->players)==8 && $this->gameStatus==1 && $this->lastTime>5)
 						{
-							$this->sendToAll("[HG] Already full,starting");
+							$this->sendToAll("[HG] Match Is Full.....Starting");
 							$this->lastTime=5;
 						}
 						$this->changeStatusSign();
@@ -922,7 +915,7 @@ class Main extends PluginBase implements Listener
 		{	
 			unset($this->players[$event->getPlayer()->getName()]);
 			$this->ClearInv($event->getPlayer());
-			$this->sendToAll("[HG] Player".$event->getPlayer()->getName()."has left the game");
+			$this->sendToAll("[HG] Player " .$event->getPlayer()->getName(). " has left the game");
 			$this->changeStatusSign();
 			if($this->gameStatus==1 && count($this->players)<2)
 			{
@@ -942,7 +935,8 @@ class Main extends PluginBase implements Listener
 	
 	public function onDisable(){
 		
+		
 	}
 }
 ?>
-ý/Í#O ¼ƒ§¥žS/³qçæ   GBMB
+õŸE“í*æ€„ó‡Ä°ÿªfTû   GBMB
