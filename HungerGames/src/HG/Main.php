@@ -78,8 +78,6 @@ class Main extends PluginBase implements Listener
 			$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 			$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 			$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
-<<<<<<< HEAD
-			$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
 =======
 			$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);			
 >>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
@@ -229,7 +227,6 @@ class Main extends PluginBase implements Listener
 				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
 <<<<<<< HEAD
-				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
 =======
 				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);	
 >>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
@@ -790,8 +787,8 @@ class Main extends PluginBase implements Listener
 				$player->sendMessage(TextFormat::GREEN."[HG] Please click on the 8th spawnpoint");
 				$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 				break;	
-			case 9:
-				$this->pos9=array(
+			case 8:
+				$this->pos8=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
 					"z" =>$block->z,
@@ -800,25 +797,12 @@ class Main extends PluginBase implements Listener
 				$this->config->save();
 				$this->SetStatus[$username]++;
 <<<<<<< HEAD
-				$player->sendMessage(TextFormat::GREEN."[HG] spawnpoint 9 created");
-				$player->sendMessage(TextFormat::GREEN."[HG] Please click to choose a destination for the death match");
-				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
-				break;
-			case 10:
-=======
-				$player->sendMessage(TextFormat::GREEN."Spawnpoint 8 created!");
+				$player->sendMessage(TextFormat::GREEN."[HG] spawnpoint 8 created");
 				$player->sendMessage(TextFormat::GREEN."Please click on the 9th spawnpoint.");
-				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
+				$this->pos9=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 				break;
 			case 9:
-				$this->pos9=array(
-					"x" =>$block->x,
-					"y" =>$block->y,
-					"z" =>$block->z,
-					"level" =>$levelname);
-				$this->config->set("pos9",$this->pos9);
-				$this->config->save();
-				$this->SetStatus[$username]++;
+=======
 				$player->sendMessage(TextFormat::GREEN."Spawnpoint 9 created!");
 				$player->sendMessage(TextFormat::GREEN."Please click on the 10th spawnpoint.");
 				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
@@ -833,10 +817,23 @@ class Main extends PluginBase implements Listener
 				$this->config->save();
 				$this->SetStatus[$username]++;
 				$player->sendMessage(TextFormat::GREEN."Spawnpoint 10 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 11th spawnpoint.");
+				$this->pos9=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
+				break;
+			case 11:
+				$this->pos11=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos11",$this->pos11);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 11 created!");
 				$player->sendMessage(TextFormat::GREEN."Please click on the spawnpoint for deathmatch.");
 				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
 				break;	
-			case 11:
+			case lastpos:
 >>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 				$this->lastpos=array(
 					"x" =>$block->x,
