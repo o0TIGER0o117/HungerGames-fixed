@@ -5,29 +5,29 @@ api: [1.0.0]
 load: POSTWORLD
 author: a k i d
 commands:
- fsg:
-  permission: FSurvivalGame.command.fsg
-  description: FSurvivalGame Main Command
-  usage: /fsg <set|remove>
+ hg:
+  permission: hg.command.hg
+  description: 
+  usage: /hg <set|remove>
  lobby:
-  permission: FSurvivalGame.command.lobby
+  permission: hg.command.lobby
   description: back to lobby
   usage: /lobby
 permissions:
- FSurvivalGame.*:
+ hg.*:
   description: the main permission
   default: op
   children:
-   FSurvivalGame.command.*:
+   hg.command.*:
     description: use commands in plugin
     default: op
     children:
-     FSurvivalGame.command.lobby:
+     hg.command.lobby:
       description: back to lobby
       default: true
-     FSurvivalGame.command.fsg:
+     hg.command.fsg:
       description: set SurvivalGame
       default: op
-   FSurvivalGame.touch.startgame:
+   hg.touch.startgame:
     description: click the sign and join the game
     default: true
