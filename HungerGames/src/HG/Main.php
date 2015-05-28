@@ -348,7 +348,7 @@ class Main extends PluginBase implements Listener
 		    	if($this->PlayerIsInGame($player->getName()) && !$this->PlayerIsInGame($killer->getName()) && !$killer->isOp())
 		    	{
 		    		$event->setCancelled();
-		    		$killer->sendMessage("//ADD money for playerdeathevent");
+		    		$killer->sendMessage("//ADD money for PlayerDeathEvent");
 		    		$killer->kill();
 		    	}
 		    }
