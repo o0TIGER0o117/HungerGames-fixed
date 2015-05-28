@@ -63,6 +63,8 @@ class Main extends PluginBase implements Listener
 			$this->pos6=$this->config->get("pos6");
 			$this->pos7=$this->config->get("pos7");
 			$this->pos8=$this->config->get("pos8");
+			$this->pos9=$this->config->get("pos9");
+			$this->pos10=$this->config->get("pos10");
 			$this->lastpos=$this->config->get("lastpos");
 			$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
 			$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
@@ -76,7 +78,11 @@ class Main extends PluginBase implements Listener
 			$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 			$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 			$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
+<<<<<<< HEAD
 			$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
+=======
+			$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);			
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 			$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 		}
 		if(!$this->config->exists("endTime"))
@@ -176,7 +182,11 @@ class Main extends PluginBase implements Listener
 			$this->config->remove("lastpos");
 			$this->config->save();
 			unset($this->sign,$this->pos1,$this->pos2,$this->pos3,$this->pos4,$this->pos5,$this->pos6,$this->pos7,$this->pos8,$this->pos9,$this->pos10,$this->lastpos);
+<<<<<<< HEAD
 			$sender->sendMessage("[HG] succeeded in deleting game settings");
+=======
+			$sender->sendMessage(TextFormat::GREEN . "Game settings successfully removed.");
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 			break;
 		case "start":
 			$this->sendToAll("[HG] Forced Match Start");
@@ -198,8 +208,13 @@ class Main extends PluginBase implements Listener
 				$this->pos6=$this->config->get("pos6");
 				$this->pos7=$this->config->get("pos7");
 				$this->pos8=$this->config->get("pos8");
+<<<<<<< HEAD
 				$this->pos8=$this->config->get("pos9");
 				$this->pos8=$this->config->get("pos10");
+=======
+				$this->pos9=$this->config->get("pos9");
+				$this->pos10=$this->config->get("pos10");
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 				$this->lastpos=$this->config->get("lastpos");
 				$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
 				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
@@ -213,7 +228,11 @@ class Main extends PluginBase implements Listener
 				$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
+<<<<<<< HEAD
 				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
+=======
+				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);	
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 			}
 			if(!$this->config->exists("endTime"))
@@ -438,12 +457,21 @@ class Main extends PluginBase implements Listener
 			case 3:
 			case 4:
 			case 5:
+				$this->sendToAll(TextFormat::YELLOW."Starting in ".$this->lastTime.".");
+				break;	
 			case 10:
+<<<<<<< HEAD
 			case 20:
 			$this->sendToAll("[HG] The match is beginning");
 				break;
 			case 30:
 				$this->sendToAll("[HG] The game will start in " .$this->lastTime. " seconds");
+=======
+				$this->sendToAll(TextFormat::YELLOW."The match will start in 0:10.");
+				break;
+			case 30:
+				$this->sendToAll(TextFormat::YELLOW."The match will start in 0:30.");
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 				break;
 			case 60:
 				$this->sendToAll(" [HG] The game will start in one minute");
@@ -459,9 +487,14 @@ class Main extends PluginBase implements Listener
 				break;
 			case 0:
 				$this->gameStatus=2;
+<<<<<<< HEAD
 				$this->sendToAll("[HG] THE GAMES HAVE BEGUN");
 				$this->sendToAll("[HG] Chest Have Been Filled!");
 				$this->lastTime = $this->godTime;
+=======
+				$this->sendToAll(TextFormat::YELLOW."The match has started.");
+				$this->lastTime=$this->godTime;
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 				$this->resetChest();
 				foreach($this->players as $key=>$val)
 				{
@@ -527,8 +560,14 @@ class Main extends PluginBase implements Listener
 			case 3:
 			case 4:
 			case 5:
+				$this->sendToAll(TextFormat::YELLOW."Deathmatch will start in " .$this->lastTime. ".");
+				break;	
 			case 10:
+<<<<<<< HEAD
 				$this->sendToAll("[HG] " .$this->lastTime. " seconds left for the death match");
+=======
+				$this->sendToAll(TextFormat::YELLOW."Deathmatch will start in 0:10.");
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 				break;
 			case 0:
 				$this->sendToAll("[HG] the death match begins");
@@ -554,10 +593,18 @@ class Main extends PluginBase implements Listener
 			case 3:
 			case 4:
 			case 5:
+				$this->sendToAll("Ending in " .$this->lastTime. ".");
+				break;	
 			case 10:
+				$this->sendToAll("The match will end in 0:30.");
+				break;
 			//case 20:
 			case 30:
+<<<<<<< HEAD
 				$this->sendToAll("[HG] there are " .$this->lastTime. " seconds to the end of the game");
+=======
+				$this->sendToAll("The match will end in 0:30.");
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 				break;
 			case 0:
 				$this->sendToAll("[HG] games ended");
@@ -752,11 +799,45 @@ class Main extends PluginBase implements Listener
 				$this->config->set("pos8",$this->pos8);
 				$this->config->save();
 				$this->SetStatus[$username]++;
+<<<<<<< HEAD
 				$player->sendMessage(TextFormat::GREEN."[HG] spawnpoint 9 created");
 				$player->sendMessage(TextFormat::GREEN."[HG] Please click to choose a destination for the death match");
 				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
 				break;
 			case 10:
+=======
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 8 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 9th spawnpoint.");
+				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
+				break;
+			case 9:
+				$this->pos9=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos9",$this->pos9);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 9 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 10th spawnpoint.");
+				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
+				break;
+			case 10:
+				$this->pos10=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos10",$this->pos10);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 10 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the spawnpoint for deathmatch.");
+				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
+				break;	
+			case 11:
+>>>>>>> 4b4f0bbfb82a8ee5163644d848ffa8fc8187da4a
 				$this->lastpos=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
