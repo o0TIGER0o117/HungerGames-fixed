@@ -1,6 +1,6 @@
 <?php
-namespace ResetChest;
 
+namespace ResetChest;
 use pocketmine\command\Command;
 use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
@@ -15,7 +15,6 @@ use pocketmine\math\Vector3;
 use pocketmine\tile\Chest;
 use pocketmine\item\Item;
 use pocketmine\utils\TextFormat;
-
 class Main extends PluginBase implements CommandExecutor, Listener
 {
 	private static $obj = null;
