@@ -37,6 +37,8 @@ use pocketmine\event\player\PlayerMoveEvent;
 
 class Main extends PluginBase implements Listener
 {
+	private $points;
+private $aplayers = 0;
 	
 	private static $obj = null;
 	public static function getInstance()
@@ -52,7 +54,8 @@ class Main extends PluginBase implements Listener
 		$this->getServer()->getPluginManager()->registerEvents($this,$this);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this,"time"]),20);
 		@mkdir($this->getDataFolder(), 0777, true);
-		$this->config=new Config($this->getDataFolder() . "config.yml", Config::YAML, array());
+		$this->points = new Config($this->getDataFolder()."points.yml", Config::YAML);
+		$this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML, array());
 		if($this->config->exists("lastpos"))
 		{
 			$this->sign=$this->config->get("sign");
@@ -111,12 +114,25 @@ class Main extends PluginBase implements Listener
 		$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] LOADED everything!
 **UPDATE**
 PopUps!!!!!
-Fixed Spawnpoint Issue!!!!");
+Fixed Spawnpoint Issue!!!!
+New Command: /hg stats!!!!!");
+$this->saveDefaultConfig();
+ $this->reloadConfig();
 	
 	}
 	
+	/*public function onDisable(){
+			$this->getConfig()->save();
+        	$this->points->save();
+		
+	}
+}
+*/
+
+	
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args)
 	{
+		
 		if($command->getName()=="lobby")
 		{
 			if($this->gameStatus>=2)
@@ -155,6 +171,29 @@ Fixed Spawnpoint Issue!!!!");
 		if(!isset($args[0])){unset($sender,$cmd,$label,$args);return false;};
 		switch ($args[0])
 		{
+			case "stats":
+                                        	if($sender->hasPermission("hg.command.stat") or $sender->hasPermission("hg.command") or $sender->hasPermission("hg")){
+                                        		if(!(isset($args[1]))){
+                                        			$player = $sender->getName();
+								$deaths = $this->points->get($player)[0];
+								$kills = $this->points->get($player)[1];
+								$points = $this->points->get($player)[2];
+								$sender->sendMessage(TextFormat::RED."[HG] You have ".$deaths." deaths and".$kills." kills.");
+								return true;
+                                        		}else{
+                                        			$player = $args[1];
+								$deaths = $this->points->get($player)[0];
+								$kills = $this->points->get($player)[1];
+								$points = $this->points->get($player)[2];
+								$sender->sendMessage(TextFormat::RED."[HG]" .$player." has ".$deaths." deaths and ".$kills." kills");
+								return true;
+                                        		}
+                                		}else{
+                               	        		$sender->sendMessage("You haven't the permission to run this command.");
+										return true; }
+										break;
+							
+					
 		case "set":
 			if($this->config->exists("lastpos"))
 			{
@@ -194,6 +233,7 @@ Fixed Spawnpoint Issue!!!!");
 			unset($this->config);
 			@mkdir($this->getDataFolder(), 0777, true);
 			$this->config=new Config($this->getDataFolder() . "config.yml", Config::YAML, array());
+				$this->points = new Config($this->getDataFolder()."points.yml", Config::YAML);
 			if($this->config->exists("lastpos"))
 			{
 				$this->sign=$this->config->get("sign");
@@ -969,10 +1009,34 @@ Fixed Spawnpoint Issue!!!!");
 			}
 		}
 	}
-	
 	public function onDisable(){
-		
-		
+		$this->points->save();
+	$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] Disabled");
+	$this->getConfig()->save();
 	}
+	private function addDeath($player){
+		if(!$this->points->exist($player)){ //if the name of the victim is not in the config
+        		$this->points->set($player, array(1, 0, 0)); //set the first death
+       		}else{
+       			$deaths = $this->points->get($player)[0] + 1; //get the victim's deaths, add one and store in a variable
+       			$kills = $this->points->get($player)[1]; //get the players kills and store in a var
+       			$points = $this->points->get($player)[2] - $this->getConfig()->get('points-per-death'); //get the player points
+        		$this->points->set($player, array($deaths, $kills, $points)); //set the victim's actual deaths & kills
+        	}
+        	return true;
+	}
+	
+	private function addKill($player){
+		if(!$this->points->exist($player)){ //if the name of the killer is not in the config
+        		$this->points->set($player, array(0, 1, $this->getConfig()->get('points-per-kill'))); //set the first kill
+       		}else{
+       			$deaths = $this->points->get($player)[0]; //get the killer's deaths
+       			$kills = $this->points->get($player)[1] + 1; //get the players kills and store in a var
+       			$points = $this->points->get($player)[2] + $this->getConfig()->get('points-per-kill');
+        		$this->points->set($player, array($deaths, $kills, $points)); //set the killer's actual deaths & kills
+        	}
+        	return true;
+	}
+
 }
 ?>
