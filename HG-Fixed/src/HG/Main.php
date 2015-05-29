@@ -427,7 +427,7 @@ $this->saveDefaultConfig();
 			
 		}
 	}
-	public function onPlayerDie(PlayerDeathEvent $event){
+	/* public function onPlayerDie(PlayerDeathEvent $event){
   $entity = $event->getPlayer();
   $causeId = $p->getLastDamageCause()->getCause();
   switch($causeId){
@@ -449,6 +449,7 @@ $this->saveDefaultConfig();
 	   $entity->sendPopup($popup);
 	  		}
 	}
+	*/
 	//TODO: Finish PopUps
 	public function sendToAll($msg){
 		foreach($this->players as $pl)
