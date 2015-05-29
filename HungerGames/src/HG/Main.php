@@ -26,6 +26,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use onebone\economyapi\EconomyAPI;
+use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -107,7 +108,10 @@ class Main extends PluginBase implements Listener
 		$this->SetStatus=array();//设置状态
 		$this->all=0;//最大玩家数量
 		$this->config->save();
-		$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] LOADED everything!");
+		$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] LOADED everything!
+**UPDATE**
+PopUps!!!!!
+Fixed Spawnpoint Issue!!!!");
 	
 	}
 	
@@ -383,7 +387,29 @@ class Main extends PluginBase implements Listener
 			
 		}
 	}
+	public function onPlayerDie(PlayerDeathEvent $event){
+  $entity = $event->getPlayer();
+  $causeId = $p->getLastDamageCause()->getCause();
+  switch($causeId){
+    case EntityDamageEvent::CAUSE_FALL:
 	
+	
+      $popup = "Where Your Jordans At Doe?";
+	   $entity->sendPopup($popup);
+	  		}
+	}
+	public function onLavaDeath(PlayerDeathEvent $event) {
+		$entity = $event->getPlayer();
+  $causeId = $p->getLastDamageCause()->getCause();
+   switch($causeId){  
+    case EntityDamageEvent::CAUSE_LAVA:
+	
+	
+      $popup = "You Think You Can Swim In Lava?";
+	   $entity->sendPopup($popup);
+	  		}
+	}
+	//TODO: Finish PopUps
 	public function sendToAll($msg){
 		foreach($this->players as $pl)
 		{
