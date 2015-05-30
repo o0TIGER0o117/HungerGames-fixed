@@ -187,14 +187,14 @@ class Main extends PluginBase implements Listener
 		                $deaths = $this->points->get($player)[0];
 				$kills = $this->points->get($player)[1];
 				$points = $this->points->get($player)[2];
-				$sender->sendMessage(TextFormat::RED."You have ".$deaths." deaths and".$kills." kills.");
+				$sender->sendMessage(TextFormat::RED. " You have " .$deaths. " deaths and " .$kills. " kills. ");
 				return true;
                         }else{
                                 $player = $args[1];
 				$deaths = $this->points->get($player)[0];
 				$kills = $this->points->get($player)[1];
 				$points = $this->points->get($player)[2];
-				$sender->sendMessage(TextFormat::RED.".$player." has ".$deaths." deaths and ".$kills." kills.");
+				$sender->sendMessage(TextFormat::RED .$player. " has " .$deaths. " deaths and " .$kills. " kills. ");
 				return true;
                                 }
                         }else{
@@ -478,7 +478,7 @@ class Main extends PluginBase implements Listener
 			
 		}
 	}
-	public function onPlayerDie(PlayerDeathEvent $event){
+	/*  public function onPlayerDie(PlayerDeathEvent $event){
 	          $p = $event->getPlayer();
   $causeId = $p->getLastDamageCause()->getCause();
   switch($causeId){
@@ -547,7 +547,7 @@ class Main extends PluginBase implements Listener
 	break;	
   }
   if(isset($text)) $p->sendPopup($text);
-	}
+	} */
 	public function sendToAll($msg){
 		foreach($this->players as $pl)
 		{
