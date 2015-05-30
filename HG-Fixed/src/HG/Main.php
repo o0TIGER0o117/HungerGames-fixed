@@ -26,7 +26,6 @@ use pocketmine\utils\TextFormat;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use onebone\economyapi\EconomyAPI;
-use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -37,8 +36,6 @@ use pocketmine\event\player\PlayerMoveEvent;
 
 class Main extends PluginBase implements Listener
 {
-	private $points;
-private $aplayers = 0;
 	
 	private static $obj = null;
 	public static function getInstance()
@@ -52,7 +49,7 @@ private $aplayers = 0;
 			self::$obj = $this;
 		}
 		$this->getServer()->getPluginManager()->registerEvents($this,$this);
-		$this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this,"time"]),20);
+		$this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this,"gameTimber"]),20);
 		@mkdir($this->getDataFolder(), 0777, true);
 		$this->points = new Config($this->getDataFolder()."points.yml", Config::YAML);
 		$this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML, array());
@@ -69,6 +66,20 @@ private $aplayers = 0;
 			$this->pos8=$this->config->get("pos8");
 			$this->pos9=$this->config->get("pos9");
 			$this->pos10=$this->config->get("pos10");
+			$this->pos11=$this->config->get("pos11");
+			$this->pos12=$this->config->get("pos12");
+			$this->pos13=$this->config->get("pos13");
+			$this->pos14=$this->config->get("pos14");
+			$this->pos15=$this->config->get("pos15");
+			$this->pos16=$this->config->get("pos16");
+			$this->pos17=$this->config->get("pos17");
+			$this->pos18=$this->config->get("pos18");
+			$this->pos19=$this->config->get("pos19");
+			$this->pos20=$this->config->get("pos20");
+			$this->pos21=$this->config->get("pos21");
+			$this->pos22=$this->config->get("pos22");
+			$this->pos23=$this->config->get("pos23");
+			$this->pos24=$this->config->get("pos24");
 			$this->lastpos=$this->config->get("lastpos");
 			$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
 			$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
@@ -82,7 +93,21 @@ private $aplayers = 0;
 			$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 			$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 			$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
-			$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);			
+			$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
+			$this->pos11=new Vector3($this->pos11["x"]+0.5,$this->pos11["y"],$this->pos11["z"]+0.5);
+                        $this->pos12=new Vector3($this->pos12["x"]+0.5,$this->pos12["y"],$this->pos12["z"]+0.5);
+                        $this->pos13=new Vector3($this->pos13["x"]+0.5,$this->pos13["y"],$this->pos13["z"]+0.5);
+                        $this->pos14=new Vector3($this->pos14["x"]+0.5,$this->pos14["y"],$this->pos14["z"]+0.5);
+                        $this->pos15=new Vector3($this->pos15["x"]+0.5,$this->pos15["y"],$this->pos15["z"]+0.5);
+                        $this->pos16=new Vector3($this->pos16["x"]+0.5,$this->pos16["y"],$this->pos16["z"]+0.5);
+                        $this->pos17=new Vector3($this->pos17["x"]+0.5,$this->pos17["y"],$this->pos17["z"]+0.5);
+                        $this->pos18=new Vector3($this->pos18["x"]+0.5,$this->pos18["y"],$this->pos18["z"]+0.5);
+                        $this->pos19=new Vector3($this->pos19["x"]+0.5,$this->pos19["y"],$this->pos19["z"]+0.5);
+                        $this->pos20=new Vector3($this->pos20["x"]+0.5,$this->pos20["y"],$this->pos20["z"]+0.5);
+                        $this->pos21=new Vector3($this->pos21["x"]+0.5,$this->pos21["y"],$this->pos21["z"]+0.5);
+                        $this->pos22=new Vector3($this->pos22["x"]+0.5,$this->pos22["y"],$this->pos22["z"]+0.5);
+                        $this->pos23=new Vector3($this->pos23["x"]+0.5,$this->pos23["y"],$this->pos23["z"]+0.5);
+                        $this->pos24=new Vector3($this->pos24["x"]+0.5,$this->pos24["y"],$this->pos24["z"]+0.5);
 			$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 		}
 		if(!$this->config->exists("endTime"))
@@ -111,33 +136,17 @@ private $aplayers = 0;
 		$this->SetStatus=array();//设置状态
 		$this->all=0;//最大玩家数量
 		$this->config->save();
-		$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] LOADED everything!
-**UPDATE**
-PopUps!!!!!
-Fixed Spawnpoint Issue!!!!
-New Command: /hg stats!!!!!");
-$this->saveDefaultConfig();
- $this->reloadConfig();
+		$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] LOADED everything!");
 	
 	}
-	
-	/*public function onDisable(){
-			$this->getConfig()->save();
-        	$this->points->save();
-		
-	}
-}
-*/
-
 	
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args)
 	{
-		
 		if($command->getName()=="lobby")
 		{
 			if($this->gameStatus>=2)
 			{
-				$sender->sendMessage("[HG] The Game Has Started. You Cannot Go Back To The Lobby.");
+				$sender->sendMessage("The game has already started. You cannot go back to the lobby.");
 				return;
 			}
 			if(isset($this->players[$sender->getName()]))
@@ -145,14 +154,14 @@ $this->saveDefaultConfig();
 				unset($this->players[$sender->getName()]);
 				$sender->setLevel($this->signlevel);
 				$sender->teleport($this->signlevel->getSpawnLocation());
-				$sender->sendMessage("[HG] Back to lobby...");
-				$this->sendToAll("[HG] Player " .$sender->getName(). " exit from game");
+				$sender->sendMessage(TextFormat::GREEN."Teleporting to lobby...");
+				$this->sendToAll(TextFormat::RED."Player ".$sender->getName()." left the match.");
 				$this->changeStatusSign();
 				if($this->gameStatus==1 && count($this->players)<2)
 				{
 					$this->gameStatus=0;
 					$this->lastTime=0;
-					$this->sendToAll("[HG] Less than 2 players,stopped countdown");
+					$this->sendToAll("There aren't enough players. Countdown was stopped.");
 					/*foreach($this->players as $pl)
 					{
 						$p=$this->getServer()->getPlayer($pl["id"]);
@@ -164,45 +173,44 @@ $this->saveDefaultConfig();
 			}
 			else
 			{
-				$sender->sendMessage("[HG] You are not in the game.");
+				$sender->sendMessage(TextFormat::RED . "You are not in a match.");
 			}
 			return true;
 		}
 		if(!isset($args[0])){unset($sender,$cmd,$label,$args);return false;};
 		switch ($args[0])
 		{
-			case "stats":
-                                        	if($sender->hasPermission("hg.command.stat") or $sender->hasPermission("hg.command") or $sender->hasPermission("hg")){
-                                        		if(!(isset($args[1]))){
-                                        			$player = $sender->getName();
-								$deaths = $this->points->get($player)[0];
-								$kills = $this->points->get($player)[1];
-								$points = $this->points->get($player)[2];
-								$sender->sendMessage(TextFormat::RED."[HG] You have ".$deaths." deaths and".$kills." kills.");
-								return true;
-                                        		}else{
-                                        			$player = $args[1];
-								$deaths = $this->points->get($player)[0];
-								$kills = $this->points->get($player)[1];
-								$points = $this->points->get($player)[2];
-								$sender->sendMessage(TextFormat::RED."[HG]" .$player." has ".$deaths." deaths and ".$kills." kills");
-								return true;
-                                        		}
-                                		}else{
-                               	        		$sender->sendMessage("You haven't the permission to run this command.");
-										return true; }
-										break;
-							
-					
+		case "stats":
+			if($sender->hasPermission("hg.command.stats") or $sender->hasPermission("hg.command") or $sender->hasPermission("hg")){
+                                if(!(isset($args[1]))){
+                                $player = $sender->getName();
+		                $deaths = $this->points->get($player)[0];
+				$kills = $this->points->get($player)[1];
+				$points = $this->points->get($player)[2];
+				$sender->sendMessage(TextFormat::RED."You have ".$deaths." deaths and".$kills." kills.");
+				return true;
+                        }else{
+                                $player = $args[1];
+				$deaths = $this->points->get($player)[0];
+				$kills = $this->points->get($player)[1];
+				$points = $this->points->get($player)[2];
+				$sender->sendMessage(TextFormat::RED.".$player." has ".$deaths." deaths and ".$kills." kills.");
+				return true;
+                                }
+                        }else{
+                                $sender->sendMessage("You dont have permissions to run this command.");
+				return true; }
+				break;
 		case "set":
 			if($this->config->exists("lastpos"))
 			{
-				$sender->sendMessage("[HG] The game was set before,please use '/hg remove' and try again.");
+				$sender->sendMessage("The game was set before. Please use /fsg remove and try again.");
 			}
 			else
 			{
 				$name=$sender->getName();
-				$sender->sendMessage("[HG] Please tap the status sign.");
+				$this->SetStatus[$name]=0;
+				$sender->sendMessage("Please tap the status sign.");
 			}
 			break;
 		case "remove":
@@ -217,15 +225,27 @@ $this->saveDefaultConfig();
 			$this->config->remove("pos8");
 			$this->config->remove("pos9");
 			$this->config->remove("pos10");
+			$this->config->remove("pos11");
+			$this->config->remove("pos12");
+			$this->config->remove("pos13");
+			$this->config->remove("pos14");
+			$this->config->remove("pos15");
+			$this->config->remove("pos16");
+			$this->config->remove("pos17");
+			$this->config->remove("pos18");
+			$this->config->remove("pos19");
+			$this->config->remove("pos20");
+			$this->config->remove("pos21");
+			$this->config->remove("pos22");
+			$this->config->remove("pos23");
+			$this->config->remove("pos24");
 			$this->config->remove("lastpos");
 			$this->config->save();
-			unset($this->sign,$this->pos1,$this->pos2,$this->pos3,$this->pos4,$this->pos5,$this->pos6,$this->pos7,$this->pos8,$this->pos9,$this->pos10,$this->lastpos);
-
-			$sender->sendMessage("[HG] succeeded in deleting game settings");
+			unset($this->sign,$this->pos1,$this->pos2,$this->pos3,$this->pos4,$this->pos5,$this->pos6,$this->pos7,$this->pos8,$this->pos9,$this->pos10,$this->pos11,$this->pos12,$this->pos13,$this->pos14,$this->pos15,$this->pos16,$this->pos17,$this->pos18,$this->pos19,$this->pos20,$this->pos21,$this->pos22,$this->pos23,$this->pos24,$this->lastpos);
 			$sender->sendMessage(TextFormat::GREEN . "Game settings successfully removed.");
 			break;
 		case "start":
-			$this->sendToAll("[HG] Forced Match Start");
+			$this->sendToAll("Match has been started forcefully.");
 			$this->gameStatus=1;
 			$this->lastTime=5;
 			break;
@@ -233,7 +253,6 @@ $this->saveDefaultConfig();
 			unset($this->config);
 			@mkdir($this->getDataFolder(), 0777, true);
 			$this->config=new Config($this->getDataFolder() . "config.yml", Config::YAML, array());
-				$this->points = new Config($this->getDataFolder()."points.yml", Config::YAML);
 			if($this->config->exists("lastpos"))
 			{
 				$this->sign=$this->config->get("sign");
@@ -247,6 +266,20 @@ $this->saveDefaultConfig();
 				$this->pos8=$this->config->get("pos8");
 				$this->pos9=$this->config->get("pos9");
 				$this->pos10=$this->config->get("pos10");
+			        $this->pos11=$this->config->get("pos11");
+			        $this->pos12=$this->config->get("pos12");
+			        $this->pos13=$this->config->get("pos13");
+			        $this->pos14=$this->config->get("pos14");
+			        $this->pos15=$this->config->get("pos15");
+			        $this->pos16=$this->config->get("pos16");
+			        $this->pos17=$this->config->get("pos17");
+			        $this->pos18=$this->config->get("pos18");
+			        $this->pos19=$this->config->get("pos19");
+		           	$this->pos20=$this->config->get("pos20");
+		        	$this->pos21=$this->config->get("pos21");
+		        	$this->pos22=$this->config->get("pos22");
+		        	$this->pos23=$this->config->get("pos23");
+			        $this->pos24=$this->config->get("pos24");				
 				$this->lastpos=$this->config->get("lastpos");
 				$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
 				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
@@ -261,6 +294,20 @@ $this->saveDefaultConfig();
 				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
 				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
+				$this->pos11=new Vector3($this->pos11["x"]+0.5,$this->pos11["y"],$this->pos11["z"]+0.5);
+				$this->pos12=new Vector3($this->pos12["x"]+0.5,$this->pos12["y"],$this->pos12["z"]+0.5);
+				$this->pos13=new Vector3($this->pos13["x"]+0.5,$this->pos13["y"],$this->pos13["z"]+0.5);
+				$this->pos14=new Vector3($this->pos14["x"]+0.5,$this->pos14["y"],$this->pos14["z"]+0.5);
+				$this->pos15=new Vector3($this->pos15["x"]+0.5,$this->pos15["y"],$this->pos15["z"]+0.5);
+				$this->pos16=new Vector3($this->pos16["x"]+0.5,$this->pos16["y"],$this->pos16["z"]+0.5);
+				$this->pos17=new Vector3($this->pos17["x"]+0.5,$this->pos17["y"],$this->pos17["z"]+0.5);
+				$this->pos18=new Vector3($this->pos18["x"]+0.5,$this->pos18["y"],$this->pos18["z"]+0.5);
+				$this->pos19=new Vector3($this->pos19["x"]+0.5,$this->pos19["y"],$this->pos19["z"]+0.5);
+				$this->pos20=new Vector3($this->pos20["x"]+0.5,$this->pos20["y"],$this->pos20["z"]+0.5);
+				$this->pos21=new Vector3($this->pos21["x"]+0.5,$this->pos21["y"],$this->pos21["z"]+0.5);
+				$this->pos22=new Vector3($this->pos22["x"]+0.5,$this->pos22["y"],$this->pos22["z"]+0.5);
+				$this->pos23=new Vector3($this->pos23["x"]+0.5,$this->pos23["y"],$this->pos23["z"]+0.5);
+				$this->pos24=new Vector3($this->pos24["x"]+0.5,$this->pos24["y"],$this->pos24["z"]+0.5);
 				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 			}
 			if(!$this->config->exists("endTime"))
@@ -279,15 +326,15 @@ $this->saveDefaultConfig();
 			{
 				$this->config->set("godTime",15);
 			}
-			$this->endTime=(int)$this->config->get("endTime");
-			$this->gameTime=(int)$this->config->get("gameTime");
-			$this->waitTime=(int)$this->config->get("waitTime");
-			$this->godTime=(int)$this->config->get("godTime");
-			$this->gameStatus=0;
-			$this->lastTime=0;
-			$this->players=array();
-			$this->SetStatus=array();
-			$this->all=0;
+			$this->endTime=(int)$this->config->get("endTime");//游戏时间
+			$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
+			$this->waitTime=(int)$this->config->get("waitTime");//等待时间
+			$this->godTime=(int)$this->config->get("godTime");//无敌时间
+			$this->gameStatus=0;//当前状态
+			$this->lastTime=0;//还没开始
+			$this->players=array();//加入游戏的玩家
+			$this->SetStatus=array();//设置状态
+			$this->all=0;//最大玩家数量
 			$this->config->save();
 			$sender->sendMessage("[HG] Config reloaded");
 			break;
@@ -298,15 +345,19 @@ $this->saveDefaultConfig();
 		return true;
 	}
 	
-	/* public function onPlayerRespawn(PlayerRespawnEvent $event){
+	public function onPlayerRespawn(PlayerRespawnEvent $event){
         $player = $event->getPlayer();
         if($this->config->exists("lastpos"))
         {
+			if($player->getLevel()->getServer()==$this->level->getFolderName())
+			{
 				$v3=$this->signlevel->getSpawnLocation();
 				$event->setRespawnPosition(new Position($v3->x,$v3->y,$v3->z,$this->signlevel));
 			}
 		}
-	*/
+		unset($event,$player);
+    }
+	
 	public function onPlace(BlockPlaceEvent $event)
 	{
 		if(!isset($this->sign))
@@ -345,7 +396,7 @@ $this->saveDefaultConfig();
 		{
 			return;
 		}
-		$sign = $this->config->get("sign");
+		$sign=$this->config->get("sign");
 		$block=$event->getBlock();
 		if($this->PlayerIsInGame($event->getPlayer()->getName()) || ($block->getX()==$sign["x"] && $block->getY()==$sign["y"] && $block->getZ()==$sign["z"] && $block->getLevel()->getFolderName()==$sign["level"]) || $block->getLevel()==$this->level)
 		{
@@ -372,14 +423,14 @@ $this->saveDefaultConfig();
 			break;
 		default:
 			$event->setCancelled();
-			$event->getPlayer()->sendMessage("[HG] You Are Now In The Game You Cannot Use Commands Besides...");
-			$event->getPlayer()->sendMessage("[HG] /kill or /lobby to exit game");
+			$event->getPlayer()->sendMessage("You are not allowed to use commands besides");
+			$event->getPlayer()->sendMessage("/kill and /lobby.");
 			break;
 		}
 		unset($event);
 	}
 	
-	/* public function onDamage(EntityDamageEvent $event)
+	public function onDamage(EntityDamageEvent $event)
 	{
 		$player = $event->getEntity();
 		if ($event instanceof EntityDamageByEntityEvent)
@@ -395,14 +446,14 @@ $this->saveDefaultConfig();
 		    	if($this->PlayerIsInGame($player->getName()) && !$this->PlayerIsInGame($killer->getName()) && !$killer->isOp())
 		    	{
 		    		$event->setCancelled();
-		    		$killer->sendMessage("//ADD money for PlayerDeathEvent");
+		    		$killer->sendMessage("You cannot attack yet.");
 		    		$killer->kill();
 		    	}
 		    }
 		}
 		
 		unset($player,$killer,$event);
-	} */
+	}
 	
 	public function PlayerIsInGame($name)
 	{
@@ -418,39 +469,85 @@ $this->saveDefaultConfig();
 				unset($this->players[$event->getEntity()->getName()]);
 				if(count($this->players)>1)
 				{
-					$this->sendToAll("[HG] Player {$event->getEntity()->getName()} died");
-				$this->sendToAll("[HG] Players Left " .count($this->players));
-					$this->sendToAll("[HG] Time Left  ".$this->lastTime." seconds");
+					$this->sendToAll(" {$event->getEntity()->getName()} died.");
+				$this->sendToAll("Players: ".count($this->players));
+					$this->sendToAll("Time remaining: ".$this->lastTime." seconds.");
 				}
 				$this->changeStatusSign();
 			}
 			
 		}
 	}
-	/* public function onPlayerDie(PlayerDeathEvent $event){
-  $entity = $event->getPlayer();
+	public function onPlayerDie(PlayerDeathEvent $event){
+	          $p = $event->getPlayer();
   $causeId = $p->getLastDamageCause()->getCause();
   switch($causeId){
+    case EntityDamageEvent::CAUSE_DROWNING:
+      $text = "You drowned!";
+      break;
     case EntityDamageEvent::CAUSE_FALL:
-	
-	
-      $popup = "Where Your Jordans At Doe?";
-	   $entity->sendPopup($popup);
-	  		}
-	}
-	public function onLavaDeath(PlayerDeathEvent $event) {
-		$entity = $event->getPlayer();
-  $causeId = $p->getLastDamageCause()->getCause();
-   switch($causeId){  
+      $text = "You fell from a high place!";
+      break;
     case EntityDamageEvent::CAUSE_LAVA:
-	
-	
-      $popup = "You Think You Can Swim In Lava?";
-	   $entity->sendPopup($popup);
-	  		}
+      $text = "You tried to swim in lava!";
+      break;
+    case EntityDamageEvent::CAUSE_FIRE:
+      $text = "You burned to death!";
+      break;
+    case EntityDamageEvent::CAUSE_FIRE_TICK:
+      $text = "You burned to death!";
+      break;
+    case EntityDamageEvent::CAUSE_SUICIDE:
+      $text = "You died!"
+      break;
+    case EntityDamageEvent::CAUSE_SUFFOCATION: 
+      $text = "You suffocated in a wall!"
+      break;
+    case EntityDamageEvent::CAUSE_CONTACT:
+	if($cause instanceof EntityDamageByBlockEvent){
+	        if($cause->getDamager()->getId() === Block::CACTUS){
+		       $text = "You got pricked to death!";
+		}
 	}
-	*/
-	//TODO: Finish PopUps
+	break;
+    case EntityDamageEvent::CAUSE_PROJECTILE:
+	if($cause instanceof EntityDamageByEntityEvent){
+	$e = $cause->getDamager();
+		if($e instanceof Living){
+			$text = "You were shot by $params[]!";
+			$params[] = $e->getName();
+			break;
+		        }else{
+			$params[] = "Unknown";
+		}
+	}
+	break;
+    case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
+        if($cause instanceof EntityDamageByEntityEvent){
+                if($e instanceof Living){
+                        $text = "You were slain by $params[]!";
+                        $param[] = $e->getName();
+                        break;
+                        }else{
+                        $params[] = "Unknown";
+		}
+	}
+	break;
+    case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
+    case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
+		if($cause instanceof EntityDamageByEntityEvent){
+		$e = $cause->getDamager();
+			if($e instanceof Living){
+				$text = "You were blown up by $params[]!";
+				$params[] = $e->getName();
+			}
+		}else{
+		$text = "You blew up!";
+	}
+	break;	
+  }
+  if(isset($text)) $p->sendPopup($text);
+	}
 	public function sendToAll($msg){
 		foreach($this->players as $pl)
 		{
@@ -460,15 +557,15 @@ $this->saveDefaultConfig();
 		unset($pl,$msg);
 	}
 	
-	public function time(){
+	public function gameTimber(){
 		if(!isset($this->lastpos) || $this->lastpos==array())
 		{
 			return;
 		}
 		if(!$this->signlevel instanceof Level)
 		{
-			$this->level = $this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
-			$this->signlevel = $this->getServer()->getLevelByName($this->config->get("sign")["level"]);
+			$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
+			$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
 			if(!$this->signlevel instanceof Level)
 			{
 				return;
@@ -483,7 +580,7 @@ $this->saveDefaultConfig();
 				$i++;
 				$p=$this->getServer()->getPlayer($val["id"]);
 				//echo($i."\n");
-				//$p->setLevel($this->level);
+				$p->setLevel($this->level);
 				eval("\$p->teleport(\$this->pos".$i.");");
 				unset($p);
 			}
@@ -497,7 +594,7 @@ $this->saveDefaultConfig();
 				$i++;
 				$p=$this->getServer()->getPlayer($val["id"]);
 				//echo($i."\n");
-				//$p->setLevel($this->level);
+				$p->setLevel($this->level);
 				eval("\$p->teleport(\$this->pos".$i.");");
 				unset($p);
 			}
@@ -511,36 +608,25 @@ $this->saveDefaultConfig();
 				$this->sendToAll(TextFormat::YELLOW."Starting in ".$this->lastTime.".");
 				break;	
 			case 10:
-			case 20:
-			$this->sendToAll("[HG] The match is beginning");
-				break;
-			case 30:
-				$this->sendToAll("[HG] The game will start in " .$this->lastTime. " seconds");
-
 				$this->sendToAll(TextFormat::YELLOW."The match will start in 0:10.");
 				break;
 			case 30:
 				$this->sendToAll(TextFormat::YELLOW."The match will start in 0:30.");
 				break;
 			case 60:
-				$this->sendToAll(" [HG] The game will start in one minute");
+				$this->sendToAll(TextFormat::YELLOW."The match will start in 1:00.");
 				break;
 			case 90:
-				$this->sendToAll("[HG] The game will start in one minute thirty seconds");
+				$this->sendToAll(TextFormat::YELLOW."The match will start in 1:30.");
 				break;
 			case 120:
-				$this->sendToAll("[HG] The game will start in two minutes");
+				$this->sendToAll(TextFormat::YELLOW."The match will start in 2:00.");
 				break;
 			case 150:
-				$this->sendToAll("[HG] The game will start in two minutes thirty seconds");
+				$this->sendToAll(TextFormat::YELLOW."The match will start in 2:30.");
 				break;
 			case 0:
 				$this->gameStatus=2;
-
-				$this->sendToAll("[HG] THE GAMES HAVE BEGUN");
-				$this->sendToAll("[HG] Chest Have Been Filled!");
-				$this->lastTime = $this->godTime;
-
 				$this->sendToAll(TextFormat::YELLOW."The match has started.");
 				$this->lastTime=$this->godTime;
 				$this->resetChest();
@@ -570,11 +656,11 @@ $this->saveDefaultConfig();
 		{
 			if(count($this->players)==1)
 			{
-				$this->sendToAll(" [HG] Congratulations! You have won the game");
+				$this->sendToAll(TextFormat::GREEN."Congratulations! You have won the game.");
 				foreach($this->players as &$pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
-					Server::getInstance()->broadcastMessage("[HG] Congratulates to " .$p->getName(). " for whom that has won the game");
+					Server::getInstance()->broadcastMessage(TextFormat::GREEN."" .$p->getName(). " won an HG match!");
 					$p->setLevel($this->signlevel);
 					$p->getInventory()->clearAll();
 					$p->setMaxHealth(25);
@@ -590,7 +676,7 @@ $this->saveDefaultConfig();
 			}
 			else if(count($this->players)==0)
 			{
-				Server::getInstance()->broadcastMessage("[HG] The Games Have Ended");
+				Server::getInstance()->broadcastMessage("The match has ended.");
 				$this->gameStatus=0;
 				$this->lastTime=0;
 				$this->clearChest();
@@ -611,13 +697,10 @@ $this->saveDefaultConfig();
 				$this->sendToAll(TextFormat::YELLOW."Deathmatch will start in " .$this->lastTime. ".");
 				break;	
 			case 10:
-				$this->sendToAll("[HG] " .$this->lastTime. " seconds left for the death match");
-
 				$this->sendToAll(TextFormat::YELLOW."Deathmatch will start in 0:10.");
-
 				break;
 			case 0:
-				$this->sendToAll("[HG] the death match begins");
+				$this->sendToAll(TextFormat::YELLOW."The deathmatch has started. May the best one win.");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -626,7 +709,7 @@ $this->saveDefaultConfig();
 					unset($p,$pl);
 				}
 				$this->gameStatus=4;
-				$this->lastTime = $this->gameTime;
+				$this->lastTime=$this->endTime;
 				break;
 			}
 		}
@@ -647,14 +730,11 @@ $this->saveDefaultConfig();
 				break;
 			//case 20:
 			case 30:
-
-				$this->sendToAll("[HG] there are " .$this->lastTime. " seconds to the end of the game");
 				$this->sendToAll("The match will end in 0:30.");
-
 				break;
 			case 0:
-				$this->sendToAll("[HG] games ended");
-				Server::getInstance()->broadcastMessage("[HG] Games Have ended");
+				$this->sendToAll("The match has ended.");
+				Server::getInstance()->broadcastMessage("The match has ended.");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -675,7 +755,21 @@ $this->saveDefaultConfig();
 		}
 		$this->changeStatusSign();
 	}
-
+	
+	public function getMoney($name){
+		return EconomyAPI::getInstance()->myMoney($name);
+	}
+	
+	public function addMoney($name,$money){
+		EconomyAPI::getInstance()->addMoney($name,$money);
+		unset($name,$money);
+	}
+	
+	public function setMoney($name,$money){
+		EconomyAPI::getInstance()->setMoney($name,$money);
+		unset($name,$money);
+	}
+	
 	public function resetChest()
 	{
 		ResetChest::getInstance()->ResetChest();
@@ -698,19 +792,19 @@ $this->saveDefaultConfig();
 			switch($this->gameStatus)
 			{
 			case 0:
-				$sign->setText("HG","Tap to join","player amount :".count($this->players),"");
+				$sign->setText("[HG]","[Join]","Players: ".count($this->players),"");
 				break;
 			case 1:
-				$sign->setText("HG","Tap to join","player amount :".count($this->players),"time left :".$this->lastTime."sec");
+				$sign->setText("[HG]","[Join]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
 				break;
 			case 2:
-				$sign->setText("HG","starting right now","player amount :".count($this->players),"you are prohibited :".$this->lastTime."sec");
+				$sign->setText("[HG]","[Grace]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
 				break;
 			case 3:
-				$sign->setText("HG","running","alive :".count($this->players)."/{$this->all}","time to the death match :".$this->lastTime."sec");
+				$sign->setText("[HG]","[Running]","Players: ".count($this->players)."/{$this->all}","Time before DM:".$this->lastTime."sec");
 				break;
 			case 4:
-				$sign->setText("HG","DM","players left :".count($this->players)."/{$this->all}","time left :".$this->lastTime."sec");
+				$sign->setText("[HG]","[DM]","Players: ".count($this->players)."/{$this->all}","Ends in:".$this->lastTime."sec");
 				break;
 			}
 		}
@@ -739,8 +833,8 @@ $this->saveDefaultConfig();
 				$this->config->set("sign",$this->sign);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN."[HG] SIGN for condition has been created");
-				$player->sendMessage(TextFormat::GREEN." [HG] please click on the 1st spawnpoint");
+				$player->sendMessage(TextFormat::GREEN."Sign for condition has been created.");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 1st spawnpoint.");
 				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
 				$this->sign=new Vector3($this->sign["x"],$this->sign["y"],$this->sign["z"]);
 				$this->changeStatusSign();
@@ -754,8 +848,8 @@ $this->saveDefaultConfig();
 				$this->config->set("pos1",$this->pos1);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN." [HG] Spawnpoint 1 created");
-				$player->sendMessage(TextFormat::GREEN."[HG] Please click.on the 2nd spawnpoint");
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 1 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 2nd spawnpoint.");
 				$this->pos1=new Vector3($this->pos1["x"]+0.5,$this->pos1["y"],$this->pos1["z"]+0.5);
 				break;
 			case 2:
@@ -767,8 +861,8 @@ $this->saveDefaultConfig();
 				$this->config->set("pos2",$this->pos2);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN." [HG] spawnpoint 2 created");
-				$player->sendMessage(TextFormat::GREEN." [HG] Please click on the 3rd spawnpoint");
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 2 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 3rd spawnpoint.");
 				$this->pos2=new Vector3($this->pos2["x"]+0.5,$this->pos2["y"],$this->pos2["z"]+0.5);
 				break;	
 			case 3:
@@ -780,8 +874,8 @@ $this->saveDefaultConfig();
 				$this->config->set("pos3",$this->pos3);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN."[HG] spawnpoint 3 created");
-				$player->sendMessage(TextFormat::GREEN." [HG] Please click on the 4th spawnpoint");
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 3 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 4th spawnpoint");
 				$this->pos3=new Vector3($this->pos3["x"]+0.5,$this->pos3["y"],$this->pos3["z"]+0.5);
 				break;	
 			case 4:
@@ -793,8 +887,8 @@ $this->saveDefaultConfig();
 				$this->config->set("pos4",$this->pos4);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN."[HG] spawnpoint 4 created");
-				$player->sendMessage(TextFormat::GREEN." [HG] please click on the 5th spawnpoint");
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 4 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 5th spawnpoint.");
 				$this->pos4=new Vector3($this->pos4["x"]+0.5,$this->pos4["y"],$this->pos4["z"]+0.5);
 				break;
 			case 5:
@@ -806,8 +900,8 @@ $this->saveDefaultConfig();
 				$this->config->set("pos5",$this->pos5);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN." [HG] spawnpoint 5 created");
-				$player->sendMessage(TextFormat::GREEN."[Hunger Game] Please click on the 6th spawnpoint");
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 5 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 6th spawnpoint.");
 				$this->pos5=new Vector3($this->pos5["x"]+0.5,$this->pos5["y"],$this->pos5["z"]+0.5);
 				break;
 			case 6:
@@ -819,8 +913,8 @@ $this->saveDefaultConfig();
 				$this->config->set("pos6",$this->pos6);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN."[HG] spawnpoint 6 created");
-				$player->sendMessage(TextFormat::GREEN."[HG] Please click on the 7th spawnpoint");
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 6 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 7th spawnpoint.");
 				$this->pos6=new Vector3($this->pos6["x"]+0.5,$this->pos6["y"],$this->pos6["z"]+0.5);
 				break;
 			case 7:
@@ -832,8 +926,8 @@ $this->saveDefaultConfig();
 				$this->config->set("pos7",$this->pos7);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN."[HG] spawnpoint 7 created");
-				$player->sendMessage(TextFormat::GREEN."[HG] Please click on the 8th spawnpoint");
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 7 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 8th spawnpoint.");
 				$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 				break;	
 			case 8:
@@ -845,13 +939,19 @@ $this->saveDefaultConfig();
 				$this->config->set("pos8",$this->pos8);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-
-				$player->sendMessage(TextFormat::GREEN."[HG] spawnpoint 8 created");
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 8 created!");
 				$player->sendMessage(TextFormat::GREEN."Please click on the 9th spawnpoint.");
-				$this->pos9=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
+				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 				break;
 			case 9:
-
+				$this->pos9=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos9",$this->pos9);
+				$this->config->save();
+				$this->SetStatus[$username]++;
 				$player->sendMessage(TextFormat::GREEN."Spawnpoint 9 created!");
 				$player->sendMessage(TextFormat::GREEN."Please click on the 10th spawnpoint.");
 				$this->pos9=new Vector3($this->pos9["x"]+0.5,$this->pos9["y"],$this->pos9["z"]+0.5);
@@ -866,10 +966,192 @@ $this->saveDefaultConfig();
 				$this->config->save();
 				$this->SetStatus[$username]++;
 				$player->sendMessage(TextFormat::GREEN."Spawnpoint 10 created!");
-				$player->sendMessage(TextFormat::GREEN."[HG] Please set Deathmatch");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 11th spawnpoint.");
 				$this->pos10=new Vector3($this->pos10["x"]+0.5,$this->pos10["y"],$this->pos10["z"]+0.5);
 				break;
-			case lastpos:
+			case 11:
+				$this->pos11=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos11",$this->pos11);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 11 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 12th spawnpoint.");
+				$this->pos11=new Vector3($this->pos11["x"]+0.5,$this->pos11["y"],$this->pos11["z"]+0.5);
+				break;
+			case 12:
+				$this->pos12=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos12",$this->pos12);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 12 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 13th spawnpoint.");				
+				$this->pos12=new Vector3($this->pos12["x"]+0.5,$this->pos12["y"],$this->pos12["z"]+0.5);
+				break;
+			case 13:
+				$this->pos13=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos13",$this->pos13);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 13 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 14th spawnpoint.");				
+				$this->pos13=new Vector3($this->pos13["x"]+0.5,$this->pos13["y"],$this->pos13["z"]+0.5);
+				break;
+			case 14:
+				$this->pos14=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos14",$this->pos14);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 14 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 15th spawnpoint.");				
+				$this->pos14=new Vector3($this->pos14["x"]+0.5,$this->pos14["y"],$this->pos14["z"]+0.5);
+				break;
+			case 15:
+				$this->pos15=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos15",$this->pos15);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 15 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 16th spawnpoint.");				
+				$this->pos15=new Vector3($this->pos15["x"]+0.5,$this->pos15["y"],$this->pos15["z"]+0.5);
+				break;
+			case 16:
+				$this->pos16=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos16",$this->pos16);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 16 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 17th spawnpoint.");				
+				$this->pos16=new Vector3($this->pos16["x"]+0.5,$this->pos16["y"],$this->pos16["z"]+0.5);
+				break;
+			case 17:
+				$this->pos17=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos17",$this->pos17);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 17 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 18th spawnpoint.");				
+				$this->pos17=new Vector3($this->pos17["x"]+0.5,$this->pos17["y"],$this->pos17["z"]+0.5);
+				break;
+			case 18:
+				$this->pos18=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos18",$this->pos18);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 18 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 19th spawnpoint.");				
+				$this->pos18=new Vector3($this->pos18["x"]+0.5,$this->pos18["y"],$this->pos18["z"]+0.5);
+				break;
+			case 19:
+				$this->pos19=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos19",$this->pos19);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 19 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 20th spawnpoint.");				
+				$this->pos19=new Vector3($this->pos19["x"]+0.5,$this->pos19["y"],$this->pos19["z"]+0.5);
+				break;
+			case 20:
+				$this->pos20=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos20",$this->pos20);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 20 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 21st spawnpoint.");				
+				$this->pos20=new Vector3($this->pos20["x"]+0.5,$this->pos20["y"],$this->pos20["z"]+0.5);
+				break;
+			case 21:
+				$this->pos21=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos21",$this->pos21);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 21 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 22nd spawnpoint.");				
+				$this->pos12=new Vector3($this->pos12["x"]+0.5,$this->pos12["y"],$this->pos12["z"]+0.5);
+				break;
+			case 22:
+				$this->pos22=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos22",$this->pos22);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 22 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 23rd spawnpoint.");				
+				$this->pos22=new Vector3($this->pos22["x"]+0.5,$this->pos22["y"],$this->pos22["z"]+0.5);
+				break;
+			case 23:
+				$this->pos23=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos23",$this->pos23);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 23 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the 24th spawnpoint.");				
+				$this->pos23=new Vector3($this->pos23["x"]+0.5,$this->pos23["y"],$this->pos23["z"]+0.5);
+				break;
+			case 24:
+				$this->pos24=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos24",$this->pos24);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Spawnpoint 24 created!");
+				$player->sendMessage(TextFormat::GREEN."Please click on the spawn for deathmatch.");				
+				$this->pos12=new Vector3($this->pos24["x"]+0.5,$this->pos24["y"],$this->pos24["z"]+0.5);
+				break;				
+			case 25:
 				$this->lastpos=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -879,8 +1161,8 @@ $this->saveDefaultConfig();
 				$this->config->save();
 				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 				unset($this->SetStatus[$username]);
-	            $player->sendMessage(TextFormat::GREEN."[HG] death match destination created");
-				$player->sendMessage(TextFormat::GREEN."[HG] All settings completed and you can start a game now");
+				$player->sendMessage(TextFormat::GREEN."Deathmatch spawnpoint created!");
+				$player->sendMessage(TextFormat::GREEN."All settings completed and you can start a game now.");
 				$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);					
 			}
 		}
@@ -891,12 +1173,12 @@ $this->saveDefaultConfig();
 			{
 				if(!$this->config->exists("lastpos"))
 				{
-					$event->getPlayer()->sendMessage("[HG] You can not join the game for the game hasn't been set yet");
+					$event->getPlayer()->sendMessage("The game hasn't been set yet.");
 					return;
 				}
 				if(!$event->getPlayer()->hasPermission("FSurvivalGame.touch.startgame"))
 				{
-					$event->getPlayer()->sendMessage("[HG] You don't have permission to join this game");
+					$event->getPlayer()->sendMessage("You don't have permission to join this game.");
 					return;
 				}
 				if(!$event->getPlayer()->isOp())
@@ -906,7 +1188,7 @@ $this->saveDefaultConfig();
     				{
     					if($inv->getItem($i)->getID()!=0)
     					{
-    						$event->getPlayer()->sendMessage("[HG] take the stuff out of your inventory to join match");
+    						$event->getPlayer()->sendMessage("Remove all items from your inventory to join match.");
     						return;
     					}
     				}
@@ -914,7 +1196,7 @@ $this->saveDefaultConfig();
     				{
     					if($i->getID()!=0)
     					{
-    						$event->getPlayer()->sendMessage("[HG] Take your armor off please");
+    						$event->getPlayer()->sendMessage("Please take your armor off.");
     						return;
     					}
     				}
@@ -925,33 +1207,33 @@ $this->saveDefaultConfig();
 					{
 						if(count($this->players)>=6)
 						{
-							$event->getPlayer()->sendMessage("[HG] the map is full");
+							$event->getPlayer()->sendMessage("The match is full.");
 							return;
 						}
-						$this->sendToAll("[HG]Player " .$event->getPlayer()->getName(). " joined the game");
+						$this->sendToAll("" .$event->getPlayer()->getName(). " joined the match.");
 						$this->players[$event->getPlayer()->getName()]=array("id"=>$event->getPlayer()->getName());
-						$event->getPlayer()->sendMessage("[HG] joined the game successfully");
+						$event->getPlayer()->sendMessage("You have joined the match!");
 						if($this->gameStatus==0 && count($this->players)>=2)
 						{
 							$this->gameStatus=1;
 							$this->lastTime=$this->waitTime;
-							$this->sendToAll("[HG] The game will countdown when a low amount of players are in");
+							$this->sendToAll("The game will countdown when a low amount of players are in");
 						}
 						if(count($this->players)==8 && $this->gameStatus==1 && $this->lastTime>5)
 						{
-							$this->sendToAll("[HG] Match Is Full.....Starting");
+							$this->sendToAll("The match is already full. Starting the match.");
 							$this->lastTime=5;
 						}
 						$this->changeStatusSign();
 					}
 					else
 					{
-						$event->getPlayer()->sendMessage("[HG] You are already in the game do /lobby to leave");
+						$event->getPlayer()->sendMessage("You are already in the game. Do /lobby to leave.");
 					}
 				}
 				else
 				{
-					$event->getPlayer()->sendMessage("[HG] Can not join the game for it has already started");
+					$event->getPlayer()->sendMessage("The match has already started.");
 				}
 			}
 		}
@@ -993,13 +1275,13 @@ $this->saveDefaultConfig();
 		{	
 			unset($this->players[$event->getPlayer()->getName()]);
 			$this->ClearInv($event->getPlayer());
-			$this->sendToAll("[HG] Player " .$event->getPlayer()->getName(). " has left the game");
+			$this->sendToAll("".$event->getPlayer()->getName()." left the match.");
 			$this->changeStatusSign();
 			if($this->gameStatus==1 && count($this->players)<2)
 			{
 				$this->gameStatus=0;
 				$this->lastTime=0;
-				$this->sendToAll("[HG] not enough players countdown stopped");
+				$this->sendToAll("There aren't enough players. Countdown has stopped.");
 				/*foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -1010,34 +1292,9 @@ $this->saveDefaultConfig();
 			}
 		}
 	}
-	public function onDisable(){
-		$this->points->save();
-	$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] Disabled");
-	$this->getConfig()->save();
-	}
-	private function addDeath($player){
-		if(!$this->points->exist($player)){ //if the name of the victim is not in the config
-        		$this->points->set($player, array(1, 0, 0)); //set the first death
-       		}else{
-       			$deaths = $this->points->get($player)[0] + 1; //get the victim's deaths, add one and store in a variable
-       			$kills = $this->points->get($player)[1]; //get the players kills and store in a var
-       			$points = $this->points->get($player)[2] - $this->getConfig()->get('points-per-death'); //get the player points
-        		$this->points->set($player, array($deaths, $kills, $points)); //set the victim's actual deaths & kills
-        	}
-        	return true;
-	}
 	
-	private function addKill($player){
-		if(!$this->points->exist($player)){ //if the name of the killer is not in the config
-        		$this->points->set($player, array(0, 1, $this->getConfig()->get('points-per-kill'))); //set the first kill
-       		}else{
-       			$deaths = $this->points->get($player)[0]; //get the killer's deaths
-       			$kills = $this->points->get($player)[1] + 1; //get the players kills and store in a var
-       			$points = $this->points->get($player)[2] + $this->getConfig()->get('points-per-kill');
-        		$this->points->set($player, array($deaths, $kills, $points)); //set the killer's actual deaths & kills
-        	}
-        	return true;
+	public function onDisable(){
+		
 	}
-
 }
 ?>
