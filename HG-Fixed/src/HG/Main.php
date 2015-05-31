@@ -1,6 +1,6 @@
 <?php
 namespace HG;
-
+ 
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
 use pocketmine\command\Command;
