@@ -135,7 +135,7 @@ class Main extends PluginBase implements Listener
 		$this->SetStatus=array();//设置状态
 		$this->all=0;//最大玩家数量
 		$this->config->save();
-		$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] LOADED everything!");
+		$this->getServer()->getLogger()->info(TextFormat::BLUE."[TPE] LOADED everything!");
 	
 	}
 	
@@ -645,7 +645,7 @@ class Main extends PluginBase implements Listener
 			if($this->lastTime<=0)
 			{
 				$this->gameStatus=3;
-				$this->sendToAll("[HG] ");
+				$this->sendToAll(TextFormat::DARK_BLUE."[TPE] CHEST HAVE RESET");
 				$this->lastTime=$this->gameTime;
 				$this->resetChest();
 			}
@@ -789,7 +789,7 @@ class Main extends PluginBase implements Listener
 			switch($this->gameStatus)
 			{
 			case 0:
-				$sign->setText(TextFormat::YELLOW. "[HG]","[Join]","Players: ".count($this->players),"");
+				$sign->setText(TextFormat::YELLOW. "[TPE]","[Join]","Players: ".count($this->players),"");
 				break;
 			case 1:
 				$sign->setText(TextFormat::YELLOW. "[TPE]","[Join]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
@@ -1291,7 +1291,9 @@ class Main extends PluginBase implements Listener
 	}
 	
 	public function onDisable(){
-		
+		$this->getConfig()->save();
+        	$this->points->save();
+			$this->getServer()->getLogger()->info(TextFormat::GREEN."[TPE] Saved All Configs/Data... Disabling....");
 	}
 }
 ?>
