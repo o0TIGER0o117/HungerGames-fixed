@@ -428,7 +428,7 @@ class Main extends PluginBase implements Listener
 		unset($event);
 	}
 	
-	public function onDamage(EntityDamageEvent $event)
+	/* public function onDamage(EntityDamageEvent $event)
 	{
 		$player = $event->getEntity();
 		if ($event instanceof EntityDamageByEntityEvent)
@@ -444,14 +444,14 @@ class Main extends PluginBase implements Listener
 		    	if($this->PlayerIsInGame($player->getName()) && !$this->PlayerIsInGame($killer->getName()) && !$killer->isOp())
 		    	{
 		    		$event->setCancelled();
-		    		$killer->sendPopup("[TPE]You cannot attack yet.");
+		    		$killer->sendMessage("[TPE]You cannot attack yet.");
 		    		$killer->kill();
 		    	}
 		    }
 		}
 		
 		unset($player,$killer,$event);
-	}
+	} */
 	
 	public function PlayerIsInGame($name)
 	{
@@ -468,7 +468,7 @@ class Main extends PluginBase implements Listener
 				if(count($this->players)>1)
 				{
 					$this->sendToAll("[TPE]{$event->getEntity()->getName()} died.");
-				$this->sendToAll("[TPE]Players: ".count($this->players));
+				$this->sendToAll("[TPE]Players left: ".count($this->players));
 					$this->sendToAll("[TPE]Time remaining: ".$this->lastTime." seconds.");
 				}
 				$this->changeStatusSign();
@@ -544,7 +544,7 @@ class Main extends PluginBase implements Listener
 	}
 	break;	
   }
-  if(isset($text)) $p->sendPopup($text);
+  if(isset($text)) $p->sendMessage($text);
 	} */
 	public function sendToAll($msg){
 		foreach($this->players as $pl)
@@ -625,7 +625,7 @@ class Main extends PluginBase implements Listener
 				break;
 			case 0:
 				$this->gameStatus=2;
-				$this->sendPopup(TextFormat::YELLOW."[TPE]The Games Have Begun!!!.");
+				$this->sendMessage(TextFormat::YELLOW."[TPE]The Games Have Begun!!!.");
 				$this->lastTime=$this->godTime;
 				$this->resetChest();
 				foreach($this->players as $key=>$val)
@@ -654,7 +654,7 @@ class Main extends PluginBase implements Listener
 		{
 			if(count($this->players)==1)
 			{
-				$event->getPlayer()->sendPopup(TextFormat::GREEN."[TPE]Congratulations! You have won the game.");
+				$event->getPlayer()->sendMessage(TextFormat::GREEN."[TPE]Congratulations! You have won the game.");
 				foreach($this->players as &$pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -1170,7 +1170,7 @@ class Main extends PluginBase implements Listener
 			{
 				if(!$this->config->exists("lastpos"))
 				{
-					$event->getPlayer()->sendPopup(TextFormat::RED. "[TPE]The game hasn't been set yet.");
+					$event->getPlayer()->sendMessage(TextFormat::RED. "[TPE]The game hasn't been set yet.");
 					return;
 				}
 				if(!$event->getPlayer()->hasPermission("hg.touch.startgame"))
@@ -1204,7 +1204,7 @@ class Main extends PluginBase implements Listener
 					{
 						if(count($this->players)>=6)
 						{
-							$event->getPlayer()->sendPopup("[TPE]The match is full.");
+							$event->getPlayer()->sendMessage("[TPE]The match is full.");
 							return;
 						}
 						$this->sendToAll("[TPE]" .$event->getPlayer()->getName(). " joined the match.");
