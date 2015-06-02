@@ -1144,22 +1144,18 @@ class Main extends PluginBase implements Listener
 				$this->config->set("pos24",$this->pos24);
 				$this->config->save();
 				$this->SetStatus[$username]++;
-				$player->sendMessage(TextFormat::GREEN."Spawnpoint 24 created!");
-				$player->sendMessage(TextFormat::GREEN."Please click on the spawn for deathmatch.");				
-				$this->pos24=new Vector3($this->pos24["x"]+0.5,$this->pos24["y"],$this->pos24["z"]+0.5);
-				break;				
 			case lastpos:
-				$this->lastpos=array(
+			$this->lastpos=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
 					"z" =>$block->z,
 					"level" =>$levelname);
 				$this->config->set("lastpos",$this->lastpos);
 				$this->config->save();
-				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 				unset($this->SetStatus[$username]);
 				$player->sendMessage(TextFormat::GREEN."Deathmatch spawnpoint created!");
 				$player->sendMessage(TextFormat::GREEN."All settings completed and you can start a game now.");
+				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 				$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);					
 			}
 		}
