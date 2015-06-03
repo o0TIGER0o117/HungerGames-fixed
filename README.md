@@ -6,4 +6,5 @@
 - ***You can contribute by forking the repo and making a pull request.***<br>
 - - ***TODO:*** *Add PopUp Messages For Player Death And A Player Killing Another Player*<br>
 - ***New Feature*** */hg stats*
-- *****IMPORTANT TO CHANGE FILE CONFIGS TURN SERVER OFF THEN CHANGE CONFIGS THEN TURN BACK ON*****<br>
+- *****IMPORTANT TO CHANGE FILE CONFIGS TURN SERVER OFF THEN CHANGE CONFIGS THEN TURN BACK ON*****
+- ***Download Link: https://www.dropbox.com/s/1rdouzldv5twoa3/HungerGames_v1.4_Final.phar?dl=0***<br>
