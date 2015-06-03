@@ -121,21 +121,26 @@ class Main extends PluginBase implements Listener
 		{
 			$this->config->set("waitTime",180);
 		}
-		if(!$this->config->exists("godTime"))
+		if(!$this->config->exists("prefix"))
 		{
-			$this->config->set("godTime",10);
+			$this->config->set("prefix");
+		
 		}
 		$this->endTime=(int)$this->config->get("endTime");//游戏时间
 		$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
 		$this->waitTime=(int)$this->config->get("waitTime");//等待时间
-		$this->godTime=(int)$this->config->get("godTime");//无敌时间
+		$this->prefix=(int)$this->config->get("prefix");//无敌时间
 		$this->gameStatus=0;//当前状态
 		$this->lastTime=0;//还没开始
 		$this->players=array();//加入游戏的玩家
 		$this->SetStatus=array();//设置状态
 		$this->all=0;//最大玩家数量
 		$this->config->save();
-		$this->getServer()->getLogger()->info(TextFormat::BLUE."[TPE] LOADED everything!");
+		$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] LOADED everything!
+		***UPDATES***
+You Can Change Chat Prefix Now
+New Command: /hg stats
+- @SavionLegendZzz");
 	
 	}
 	
@@ -145,7 +150,7 @@ class Main extends PluginBase implements Listener
 		{
 			if($this->gameStatus>=2)
 			{
-				$sender->sendMessage("The game has already started. You cannot go back to the lobby.");
+				$sender->sendMessage("[{$this->getConfig()->get("prefix")}]The game has already started. You cannot go back to the lobby.");
 				return;
 			}
 			if(isset($this->players[$sender->getName()]))
@@ -153,14 +158,14 @@ class Main extends PluginBase implements Listener
 				unset($this->players[$sender->getName()]);
 				$sender->setLevel($this->signlevel);
 				$sender->teleport($this->signlevel->getSpawnLocation());
-				$sender->sendMessage(TextFormat::GREEN."Teleporting to lobby...");
-				$this->sendToAll(TextFormat::RED."Player ".$sender->getName()." left the match.");
+				$sender->sendMessage(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]Teleporting to lobby...");
+				$this->sendToAll(TextFormat::RED."[{$this->getConfig()->get("prefix")}]Player ".$sender->getName()." left the match.");
 				$this->changeStatusSign();
 				if($this->gameStatus==1 && count($this->players)<2)
 				{
 					$this->gameStatus=0;
 					$this->lastTime=0;
-					$this->sendToAll("[TPE]There aren't enough players. Countdown was stopped.");
+					$this->sendToAll("[{$this->getConfig()->get("prefix")}]There aren't enough players. Countdown was stopped.");
 					/*foreach($this->players as $pl)
 					{
 						$p=$this->getServer()->getPlayer($pl["id"]);
@@ -172,7 +177,7 @@ class Main extends PluginBase implements Listener
 			}
 			else
 			{
-				$sender->sendMessage(TextFormat::RED . "[TPE]You are not in a match.");
+				$sender->sendMessage(TextFormat::RED . "[{$this->getConfig()->get("prefix")}]You are not in a match.");
 			}
 			return true;
 		}
@@ -186,14 +191,14 @@ class Main extends PluginBase implements Listener
 		                $deaths = $this->points->get($player)[0];
 				$kills = $this->points->get($player)[1];
 				$points = $this->points->get($player)[2];
-				$sender->sendMessage(TextFormat::RED. "[TPE]You have " .$deaths. " deaths and " .$kills. " kills. ");
+				$sender->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]You have " .$deaths. " deaths and " .$kills. " kills. ");
 				return true;
                         }else{
                                 $player = $args[1];
 				$deaths = $this->points->get($player)[0];
 				$kills = $this->points->get($player)[1];
 				$points = $this->points->get($player)[2];
-				$sender->sendMessage(TextFormat::RED . "[TPE]" .$player. " has " .$deaths. " deaths and " .$kills. " kills. ");
+				$sender->sendMessage(TextFormat::RED . "[{$this->getConfig()->get("prefix")}]" .$player. " has " .$deaths. " deaths and " .$kills. " kills. ");
 				return true;
                                 }
                         }else{
@@ -203,13 +208,13 @@ class Main extends PluginBase implements Listener
 		case "set":
 			if($this->config->exists("lastpos"))
 			{
-				$sender->sendMessage(TextFormat::RED. "[TPE]The game was set before. Please use /HG remove and try again.");
+				$sender->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The game was set before. Please use /HG remove and try again.");
 			}
 			else
 			{
 				$name=$sender->getName();
 				$this->SetStatus[$name]=0;
-				$sender->sendMessage(TextFormat::DARK_BLUE. "[TPE]Please tap the status sign.");
+				$sender->sendMessage(TextFormat::DARK_BLUE. "[{$this->getConfig()->get("prefix")}]Please tap the status sign.");
 			}
 			break;
 		case "remove":
@@ -241,10 +246,10 @@ class Main extends PluginBase implements Listener
 			$this->config->remove("lastpos");
 			$this->config->save();
 			unset($this->sign,$this->pos1,$this->pos2,$this->pos3,$this->pos4,$this->pos5,$this->pos6,$this->pos7,$this->pos8,$this->pos9,$this->pos10,$this->pos11,$this->pos12,$this->pos13,$this->pos14,$this->pos15,$this->pos16,$this->pos17,$this->pos18,$this->pos19,$this->pos20,$this->pos21,$this->pos22,$this->pos23,$this->pos24,$this->lastpos);
-			$sender->sendMessage(TextFormat::GREEN . "[TPE]Game settings successfully removed.");
+			$sender->sendMessage(TextFormat::GREEN . "[HG]Game settings successfully removed.");
 			break;
 		case "start":
-			$this->sendToAll(TextFormat::BLUE. "[TPE]Match has been started forcefully.");
+			$this->sendToAll(TextFormat::BLUE. "[HG]Match has been started forcefully.");
 			$this->gameStatus=1;
 			$this->lastTime=5;
 			break;
@@ -320,21 +325,16 @@ class Main extends PluginBase implements Listener
 			{
 				$this->config->set("waitTime",180);
 			}
-			if(!$this->config->exists("godTime"))
-			{
-				$this->config->set("godTime",15);
-			}
 			$this->endTime=(int)$this->config->get("endTime");//游戏时间
 			$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
 			$this->waitTime=(int)$this->config->get("waitTime");//等待时间
-			$this->godTime=(int)$this->config->get("godTime");//无敌时间
 			$this->gameStatus=0;//当前状态
 			$this->lastTime=0;//还没开始
 			$this->players=array();//加入游戏的玩家
 			$this->SetStatus=array();//设置状态
 			$this->all=0;//最大玩家数量
 			$this->config->save();
-			$sender->sendMessage(TextFormat::GREEN. "[TPE]Config reloaded");
+			$sender->sendMessage(TextFormat::GREEN. "[HG]Config reloaded");
 			break;
 		default:
 			return false;
@@ -421,8 +421,8 @@ class Main extends PluginBase implements Listener
 			break;
 		default:
 			$event->setCancelled();
-			$event->getPlayer()->sendMessage("[TPE]You are not allowed to use commands besides");
-			$event->getPlayer()->sendMessage("[TPE]/kill and /lobby.");
+			$event->getPlayer()->sendMessage("[{$this->getConfig()->get("prefix")}]You are not allowed to use commands besides");
+			$event->getPlayer()->sendMessage("[{$this->getConfig()->get("prefix")}]/kill and /lobby.");
 			break;
 		}
 		unset($event);
@@ -467,9 +467,9 @@ class Main extends PluginBase implements Listener
 				unset($this->players[$event->getEntity()->getName()]);
 				if(count($this->players)>1)
 				{
-					$this->sendToAll("[TPE]{$event->getEntity()->getName()} died.");
-				$this->sendToAll("[TPE]Players left: ".count($this->players));
-					$this->sendToAll("[TPE]Time remaining: ".$this->lastTime." seconds.");
+					$this->sendToAll("[{$this->getConfig()->get("prefix")}]{$event->getEntity()->getName()} died.");
+				$this->sendToAll("[{$this->getConfig()->get("prefix")}]Players left: ".count($this->players));
+					$this->sendToAll("[{$this->getConfig()->get("prefix")}]Time remaining: ".$this->lastTime." seconds.");
 				}
 				$this->changeStatusSign();
 			}
@@ -603,30 +603,30 @@ class Main extends PluginBase implements Listener
 			case 3:
 			case 4:
 			case 5:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]Starting in ".$this->lastTime.".");
+				$this->sendToAll(TextFormat::YELLOW. "[{$this->getConfig()->get("prefix")}]Starting in ".$this->lastTime.".");
 				break;	
 			case 10:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]The match will start in 0:10.");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 0:10.");
 				break;
 			case 30:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]The match will start in 0:30.");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 0:30.");
 				break;
 			case 60:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]The match will start in 1:00.");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 1:00.");
 				break;
 			case 90:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]The match will start in 1:30.");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 1:30.");
 				break;
 			case 120:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]The match will start in 2:00.");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 2:00.");
 				break;
 			case 150:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]The match will start in 2:30.");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 2:30.");
 				break;
 			case 0:
 				$this->gameStatus=2;
-				$this->sendMessage(TextFormat::YELLOW."[TPE]The Games Have Begun!!!.");
-				$this->lastTime=$this->godTime;
+				$this->sendMessage(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The Games Have Begun!!!.
+				***WARNING: THERE IS NO GOD TIME***");
 				$this->resetChest();
 				foreach($this->players as $key=>$val)
 				{
@@ -645,7 +645,7 @@ class Main extends PluginBase implements Listener
 			if($this->lastTime<=0)
 			{
 				$this->gameStatus=3;
-				$this->sendToAll(TextFormat::DARK_BLUE."[TPE] CHEST HAVE RESET");
+				$this->sendToAll(TextFormat::DARK_BLUE."[{$this->getConfig()->get("prefix")}] CHEST HAVE RESET");
 				$this->lastTime=$this->gameTime;
 				$this->resetChest();
 			}
@@ -654,11 +654,11 @@ class Main extends PluginBase implements Listener
 		{
 			if(count($this->players)==1)
 			{
-				$event->getPlayer()->sendMessage(TextFormat::GREEN."[TPE]Congratulations! You have won the game.");
+				$event->getPlayer()->sendMessage(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]Congratulations! You have won the game.");
 				foreach($this->players as &$pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
-					Server::getInstance()->broadcastMessage(TextFormat::GREEN."[TPE]" .$p->getName(). " won a match!");
+					Server::getInstance()->broadcastMessage(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]" .$p->getName(). " won a match");
 					$p->setLevel($this->signlevel);
 					$p->getInventory()->clearAll();
 					$p->setMaxHealth(25);
@@ -674,7 +674,7 @@ class Main extends PluginBase implements Listener
 			}
 			else if(count($this->players)==0)
 			{
-				Server::getInstance()->broadcastMessage("[TPE]The match has ended.");
+				Server::getInstance()->broadcastMessage("[{$this->getConfig()->get("prefix")}]The match has ended.");
 				$this->gameStatus=0;
 				$this->lastTime=0;
 				$this->clearChest();
@@ -692,13 +692,13 @@ class Main extends PluginBase implements Listener
 			case 3:
 			case 4:
 			case 5:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]Deathmatch will start in " .$this->lastTime. ".");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in " .$this->lastTime. ".");
 				break;	
 			case 10:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]Deathmatch will start in 0:10.");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in 0:10.");
 				break;
 			case 0:
-				$this->sendToAll(TextFormat::YELLOW."[TPE]The deathmatch has started. May the best one win.");
+				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The deathmatch has started. May the best one win.");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -721,17 +721,17 @@ class Main extends PluginBase implements Listener
 			case 3:
 			case 4:
 			case 5:
-				$this->sendToAll(TextFormat::RED. "[TPE]Ending in " .$this->lastTime. ".");
+				$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Ending in " .$this->lastTime. ".");
 				break;	
 			case 10:
-				$this->sendToAll(TextFormat::RED. "[TPE]The match will end in 0:30.");
+				$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:30.");
 				break;
 			//case 20:
 			case 30:
-				$this->sendToAll(TextFormat::RED. "[TPE]The match will end in 0:30.");
+				$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:30.");
 				break;
 			case 0:
-				$this->sendToAll(TextFormat::BLUE. "[TPE]The match has ended.");
+				$this->sendToAll(TextFormat::BLUE. "[{$this->getConfig()->get("prefix")}]The match has ended.");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -789,19 +789,19 @@ class Main extends PluginBase implements Listener
 			switch($this->gameStatus)
 			{
 			case 0:
-				$sign->setText(TextFormat::YELLOW. "[TPE]","[Join]","Players: ".count($this->players),"");
+				$sign->setText(TextFormat::YELLOW. "[HG]","[Join]","Players: ".count($this->players),"");
 				break;
 			case 1:
-				$sign->setText(TextFormat::YELLOW. "[TPE]","[Join]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
+				$sign->setText(TextFormat::YELLOW. "[HG]","[Join]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
 				break;
 			case 2:
-				$sign->setText(TextFormat::YELLOW. "[TPE]","[No PvP Time]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
+				$sign->setText(TextFormat::YELLOW. "[HG]","[Grace]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
 				break;
 			case 3:
-				$sign->setText(TextFormat::YELLOW. "[TPE]","[Running]","Players: ".count($this->players)."/{$this->all}","Time before DM:".$this->lastTime."sec");
+				$sign->setText(TextFormat::YELLOW. "[HG]","[Running]","Players: ".count($this->players)."/{$this->all}","Time before DM:".$this->lastTime."sec");
 				break;
 			case 4:
-				$sign->setText(TextFormat::YELLOW. "[TPE]","[DM]","Players: ".count($this->players)."/{$this->all}","Ends in:".$this->lastTime."sec");
+				$sign->setText(TextFormat::YELLOW. "[HG]","[DM]","Players: ".count($this->players)."/{$this->all}","Ends in:".$this->lastTime."sec");
 				break;
 			}
 		}
@@ -819,7 +819,7 @@ class Main extends PluginBase implements Listener
 			case 0:
 				if($event->getBlock()->getID() != 63 && $event->getBlock()->getID() != 68)
 				{
-					$player->sendMessage(TextFormat::GREEN."[TPE]please choose a sign to click on");
+					$player->sendMessage(TextFormat::GREEN."[HG]please choose a sign to click on");
 					return;
 				}
 				$this->sign=array(
@@ -1166,7 +1166,7 @@ class Main extends PluginBase implements Listener
 			{
 				if(!$this->config->exists("lastpos"))
 				{
-					$event->getPlayer()->sendMessage(TextFormat::RED. "[TPE]The game hasn't been set yet.");
+					$event->getPlayer()->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The game hasn't been set yet.");
 					return;
 				}
 				if(!$event->getPlayer()->hasPermission("hg.touch.startgame"))
@@ -1181,7 +1181,7 @@ class Main extends PluginBase implements Listener
     				{
     					if($inv->getItem($i)->getID()!=0)
     					{
-    						$event->getPlayer()->sendMessage(TextFormat::RED. "[TPE]Remove all items from your inventory to join the match.");
+    						$event->getPlayer()->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Remove all items from your inventory to join the match.");
     						return;
     					}
     				}
@@ -1189,7 +1189,7 @@ class Main extends PluginBase implements Listener
     				{
     					if($i->getID()!=0)
     					{
-    						$event->getPlayer()->sendMessage(TextFormat::RED. "[TPE]Please take your armor off.");
+    						$event->getPlayer()->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Please take your armor off.");
     						return;
     					}
     				}
@@ -1200,33 +1200,33 @@ class Main extends PluginBase implements Listener
 					{
 						if(count($this->players)>=6)
 						{
-							$event->getPlayer()->sendMessage("[TPE]The match is full.");
+							$event->getPlayer()->sendMessage("[{$this->getConfig()->get("prefix")}]The match is full.");
 							return;
 						}
-						$this->sendToAll("[TPE]" .$event->getPlayer()->getName(). " joined the match.");
+						$this->sendToAll("[{$this->getConfig()->get("prefix")}]" .$event->getPlayer()->getName(). " joined the match.");
 						$this->players[$event->getPlayer()->getName()]=array("id"=>$event->getPlayer()->getName());
-						$event->getPlayer()->sendMessage(TextFormat::BLUE. "[TPE]You have joined the match!");
+						$event->getPlayer()->sendMessage(TextFormat::BLUE. "[{$this->getConfig()->get("prefix")}]You have joined the match!");
 						if($this->gameStatus==0 && count($this->players)>=2)
 						{
 							$this->gameStatus=1;
 							$this->lastTime=$this->waitTime;
-							$this->sendToAll(TextFormat::YELLOW. "[TPE]The game will countdown when a low amount of players are in");
+							$this->sendToAll(TextFormat::YELLOW. "[{$this->getConfig()->get("prefix")}]The game will countdown when a low amount of players are in");
 						}
 						if(count($this->players)==8 && $this->gameStatus==1 && $this->lastTime>5)
 						{
-							$this->sendToAll(TextFormat::GREEN. "[TPE]The match is already full. Starting the match.");
+							$this->sendToAll(TextFormat::GREEN. "[{$this->getConfig()->get("prefix")}]The match is already full. Starting the match.");
 							$this->lastTime=5;
 						}
 						$this->changeStatusSign();
 					}
 					else
 					{
-						$event->getPlayer()->sendMessage(TextFormat::RED. "[TPE]You are already in the game. Do /lobby to leave.");
+						$event->getPlayer()->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]You are already in the game. Do /lobby to leave.");
 					}
 				}
 				else
 				{
-					$event->getPlayer()->sendMessage(TextFormat::RED. "[TPE]The match has already started.");
+					$event->getPlayer()->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match has already started.");
 				}
 			}
 		}
@@ -1268,13 +1268,13 @@ class Main extends PluginBase implements Listener
 		{	
 			unset($this->players[$event->getPlayer()->getName()]);
 			$this->ClearInv($event->getPlayer());
-			$this->sendToAll(TextFormat::RED. "[TPE]".$event->getPlayer()->getName()." left the match.");
+			$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]".$event->getPlayer()->getName()." left the match.");
 			$this->changeStatusSign();
 			if($this->gameStatus==1 && count($this->players)<2)
 			{
 				$this->gameStatus=0;
 				$this->lastTime=0;
-				$this->sendToAll(TextFormat::RED. "[TPE]There aren't enough players. Countdown has stopped.");
+				$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]There aren't enough players. Countdown has stopped.");
 				/*foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -1287,9 +1287,9 @@ class Main extends PluginBase implements Listener
 	}
 	
 	public function onDisable(){
-		$this->getConfig()->save();
+		$this->config->save();
         	$this->points->save();
-			$this->getServer()->getLogger()->info(TextFormat::GREEN."[TPE] Saved All Configs/Data... Disabling....");
+			$this->getServer()->getLogger()->info(TextFormat::GREEN."[HG] Saved All Configs/Data... Disabling....");
 	}
 }
 ?>
