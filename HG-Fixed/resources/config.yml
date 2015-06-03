@@ -2,4 +2,5 @@
 endTime: 180
 gameTime: 300
 waitTime: 180
+prefix: NUll (CHANGE THIS IN CONFIG.YML PLEASE)
 ...
