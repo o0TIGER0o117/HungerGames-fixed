@@ -68,21 +68,21 @@ class Main extends PluginBase implements CommandExecutor, Listener
         	}
         	$this->chest=$this->config->get("chest");
         	$this->set=array();
-    		$sender->sendMessage("[ResetChest] Reload successful");
+    		$sender->sendMessage("[ResetChest]Reload successful");
     		break;
     	case "reset":
     		$this->ResetChest();
-    		$sender->sendMessage("[ResetChest]  Chest Refilled");
+    		$sender->sendMessage("[ResetChest]Chest Refilled");
     		break;
     	case "clear":
     		$this->ClearChest();
-    		$sender->sendMessage("[ResetChest] Chests has been cleared");
+    		$sender->sendMessage("[ResetChest]Chests has been cleared");
     		break;
     	case "add":
     	case "remove":
     		if(!$sender instanceof Player){$sender->sendMessage("[ResetChest]Please Do This In Game");break;};
     		$this->set[$sender->getName()] = $args[0];
-            $sender->sendMessage("[ResetChest] Click the chest to confirm");
+            $sender->sendMessage("[ResetChest]Click the chest to confirm");
     		break;
     	default:
     		unset($sender,$cmd,$label,$args);
