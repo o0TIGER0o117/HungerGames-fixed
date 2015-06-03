@@ -325,9 +325,14 @@ New Command: /hg stats
 			{
 				$this->config->set("waitTime",180);
 			}
+			if(!$this->config->exists("prefix"))
+			{
+				$this->config->set("prefix");
+			}
 			$this->endTime=(int)$this->config->get("endTime");//游戏时间
 			$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
 			$this->waitTime=(int)$this->config->get("waitTime");//等待时间
+			$this->prefix=(int)$this->config->get("prefix");
 			$this->gameStatus=0;//当前状态
 			$this->lastTime=0;//还没开始
 			$this->players=array();//加入游戏的玩家
