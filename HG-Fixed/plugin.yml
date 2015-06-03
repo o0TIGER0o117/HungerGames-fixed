@@ -7,8 +7,8 @@ author: SavionLegendZzz
 commands:
  hg:
   permission: hg.command.hg
-  description: Commands /hg set|remove|stats 
-  usage: /hg <set|remove|stats>
+  description: HungerGames Main Command
+  usage: /hg <set|remove|stats|start|reload>
  lobby:
   permission: hg.command.lobby
   description: back to lobby
