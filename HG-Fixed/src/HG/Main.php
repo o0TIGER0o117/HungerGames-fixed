@@ -31,8 +31,10 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use ResetChest\Main as ResetChest;
+use killrate\Main as KillRate;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\event\player\PlayerJoinEvent;
 
 class Main extends PluginBase implements Listener
 {
@@ -52,8 +54,8 @@ class Main extends PluginBase implements Listener
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this,"gameTimber"]),20);
 		@mkdir($this->getDataFolder(), 0777, true);
 		$this->points = new Config($this->getDataFolder()."points.yml", Config::YAML);
-		$this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML, array());
-		if($this->config->exists("lastpos"))
+		$this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML, array(
+		)); if($this->config->exists("lastpos"))
 		{
 			$this->sign=$this->config->get("sign");
 			$this->pos1=$this->config->get("pos1");
@@ -117,15 +119,17 @@ class Main extends PluginBase implements Listener
 		{
 			$this->config->set("gameTime",300);
 		}
+			if(!$this->config->exists("prefix"))
+		{
+			$this->config->set("prefix","NULL[PLEASE SET THIS IN CONFIG.YML]");
+		
+		}
+			
 		if(!$this->config->exists("waitTime"))
 		{
 			$this->config->set("waitTime",180);
 		}
-		if(!$this->config->exists("prefix"))
-		{
-			$this->config->set("prefix");
 		
-		}
 		$this->endTime=(int)$this->config->get("endTime");//游戏时间
 		$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
 		$this->waitTime=(int)$this->config->get("waitTime");//等待时间
@@ -136,13 +140,23 @@ class Main extends PluginBase implements Listener
 		$this->SetStatus=array();//设置状态
 		$this->all=0;//最大玩家数量
 		$this->config->save();
+		$pm = $this->getServer()->getPluginManager();
+		if(!($this->money = $pm->getPlugin("EconomyAPI"))
+        && !($this->money = $pm->getPlugin("PocketMoney")))			{
+			$this->getServer()->getLogger()->info(TextFormat::RED. "[HG]Please Install EconomyAPI For This Plugin To Work Or PocketMoney!!!");
+		} else {
+			$this->getServer()->getLogger()->info(TextFormat::DARK_BLUE."[HG]Using Money System From... ".
+											 TextFormat::YELLOW.$this->money->getName()." v".
+											 $this->money->getDescription()->getVersion());
+											 }
 		$this->getServer()->getLogger()->info(TextFormat::BLUE."[HG] LOADED everything!
 		***UPDATES***
-You Can Change Chat Prefix Now
-New Command: /hg stats
-- @SavionLegendZzz");
+        You Can Change Chat Prefix Now
+        New Command: /hg stats
+        - @SavionLegendZzz");
 	
 	}
+
 	
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args)
 	{
@@ -204,7 +218,7 @@ New Command: /hg stats
                         }else{
                                 $sender->sendMessage("You dont have permissions to run this command.");
 				return true; }
-				break;
+				break; 
 		case "set":
 			if($this->config->exists("lastpos"))
 			{
@@ -254,7 +268,6 @@ New Command: /hg stats
 			$this->lastTime=5;
 			break;
 		case "reload":
-			unset($this->config);
 			@mkdir($this->getDataFolder(), 0777, true);
 			$this->config=new Config($this->getDataFolder() . "config.yml", Config::YAML, array());
 			if($this->config->exists("lastpos"))
@@ -327,7 +340,7 @@ New Command: /hg stats
 			}
 			if(!$this->config->exists("prefix"))
 			{
-				$this->config->set("prefix");
+				$this->config->set("prefix","NULL[PLEASE SET THIS IN CONFIG.YML");
 			}
 			$this->endTime=(int)$this->config->get("endTime");//游戏时间
 			$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
@@ -348,18 +361,16 @@ New Command: /hg stats
 		return true;
 	}
 	
-	/* public function onPlayerRespawn(PlayerRespawnEvent $event){
-        $player = $event->getPlayer();
-        if($this->config->exists("lastpos"))
-        {
-			if($player->getLevel()->getServer()==$this->level->getFolderName())
-			{
-				$v3=$this->signlevel->getSpawnLocation();
-				$event->setRespawnPosition(new Position($v3->x,$v3->y,$v3->z,$this->signlevel));
-			}
+public function onJoin(PlayerJoinEvent $event){
+	$money = EconomyAPI::getInstance()->myMoney($name);
+	$money = PocketMoney::getInstance()->money($name);
+ foreach($this->players as $pl)
+		{
+			$this->getServer()->getPlayer($pl["id"])->sendTip($msg);
 		}
-		unset($event,$player);
-    } */
+		$this->sendTip("Welcome To TitanuimPE!!! You Have" .$money. "!! Make Sure To Vote For Us
+		And Buy VIP For Special Kits In HungerGames Matches!!" );
+}
 	
 	public function onPlace(BlockPlaceEvent $event)
 	{
@@ -472,7 +483,7 @@ New Command: /hg stats
 				unset($this->players[$event->getEntity()->getName()]);
 				if(count($this->players)>1)
 				{
-					$this->sendToAll("[{$this->getConfig()->get("prefix")}]{$event->getEntity()->getName()} died.");
+					$this->sendTip("[{$this->getConfig()->get("prefix")}]{$event->getEntity()->getName()} died.");
 				$this->sendToAll("[{$this->getConfig()->get("prefix")}]Players left: ".count($this->players));
 					$this->sendToAll("[{$this->getConfig()->get("prefix")}]Time remaining: ".$this->lastTime." seconds.");
 				}
@@ -481,80 +492,10 @@ New Command: /hg stats
 			
 		}
 	}
-	/*  public function onPlayerDie(PlayerDeathEvent $event){
-	          $p = $event->getPlayer();
-  $causeId = $p->getLastDamageCause()->getCause();
-  switch($causeId){
-    case EntityDamageEvent::CAUSE_DROWNING:
-      $text = "You drowned!";
-      break;
-    case EntityDamageEvent::CAUSE_FALL:
-      $text = "You fell from a high place!";
-      break;
-    case EntityDamageEvent::CAUSE_LAVA:
-      $text = "You tried to swim in lava!";
-      break;
-    case EntityDamageEvent::CAUSE_FIRE:
-      $text = "You burned to death!";
-      break;
-    case EntityDamageEvent::CAUSE_FIRE_TICK:
-      $text = "You burned to death!";
-      break;
-    case EntityDamageEvent::CAUSE_SUICIDE:
-      $text = "You died!"
-      break;
-    case EntityDamageEvent::CAUSE_SUFFOCATION: 
-      $text = "You suffocated in a wall!"
-      break;
-    case EntityDamageEvent::CAUSE_CONTACT:
-	if($cause instanceof EntityDamageByBlockEvent){
-	        if($cause->getDamager()->getId() === Block::CACTUS){
-		       $text = "You got pricked to death!";
-		}
-	}
-	break;
-    case EntityDamageEvent::CAUSE_PROJECTILE:
-	if($cause instanceof EntityDamageByEntityEvent){
-	$e = $cause->getDamager();
-		if($e instanceof Living){
-			$text = "You were shot by $params[]!";
-			$params[] = $e->getName();
-			break;
-		        }else{
-			$params[] = "Unknown";
-		}
-	}
-	break;
-    case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
-        if($cause instanceof EntityDamageByEntityEvent){
-                if($e instanceof Living){
-                        $text = "You were slain by $params[]!";
-                        $param[] = $e->getName();
-                        break;
-                        }else{
-                        $params[] = "Unknown";
-		}
-	}
-	break;
-    case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
-    case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
-		if($cause instanceof EntityDamageByEntityEvent){
-		$e = $cause->getDamager();
-			if($e instanceof Living){
-				$text = "You were blown up by $params[]!";
-				$params[] = $e->getName();
-			}
-		}else{
-		$text = "You blew up!";
-	}
-	break;	
-  }
-  if(isset($text)) $p->sendMessage($text);
-	} */
-	public function sendToAll($msg){
+	public function sendTip($msg){
 		foreach($this->players as $pl)
 		{
-			$this->getServer()->getPlayer($pl["id"])->sendMessage($msg);
+			$this->getServer()->getPlayer($pl["id"])->sendTip($msg);
 		}
 		$this->getServer()->getLogger()->info($msg);
 		unset($pl,$msg);
@@ -608,30 +549,30 @@ New Command: /hg stats
 			case 3:
 			case 4:
 			case 5:
-				$this->sendToAll(TextFormat::YELLOW. "[{$this->getConfig()->get("prefix")}]Starting in ".$this->lastTime.".");
+				$this->sendTip(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Starting in ".$this->lastTime.".");
 				break;	
 			case 10:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 0:10.");
+				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 0:10.");
 				break;
 			case 30:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 0:30.");
+				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 0:30.");
 				break;
 			case 60:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 1:00.");
+				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 1:00.");
 				break;
 			case 90:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 1:30.");
+				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 1:30.");
 				break;
 			case 120:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 2:00.");
+				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 2:00.");
 				break;
 			case 150:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The match will start in 2:30.");
+				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 2:30.");
 				break;
 			case 0:
 				$this->gameStatus=2;
-				$this->sendMessage(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The Games Have Begun!!!.
-				***WARNING: THERE IS NO GOD TIME***");
+				$this->sendTip(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]The Games Have Begun!!!.
+				***WARNING: THERE IS NO GRACE TIME***");
 				$this->resetChest();
 				foreach($this->players as $key=>$val)
 				{
@@ -650,7 +591,7 @@ New Command: /hg stats
 			if($this->lastTime<=0)
 			{
 				$this->gameStatus=3;
-				$this->sendToAll(TextFormat::DARK_BLUE."[{$this->getConfig()->get("prefix")}] CHEST HAVE RESET");
+				$this->sendTip(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}] CHEST HAVE RESET");
 				$this->lastTime=$this->gameTime;
 				$this->resetChest();
 			}
@@ -659,11 +600,11 @@ New Command: /hg stats
 		{
 			if(count($this->players)==1)
 			{
-				$event->getPlayer()->sendMessage(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]Congratulations! You have won the game.");
+				$event->getPlayer()->sendTip(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]Congratulations! You have won the game.");
 				foreach($this->players as &$pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
-					Server::getInstance()->broadcastMessage(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]" .$p->getName(). " won a match");
+					Server::getInstance()->sendToAll(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]" .$p->getName(). " won a match");
 					$p->setLevel($this->signlevel);
 					$p->getInventory()->clearAll();
 					$p->setMaxHealth(25);
@@ -697,13 +638,13 @@ New Command: /hg stats
 			case 3:
 			case 4:
 			case 5:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in " .$this->lastTime. ".");
+				$this->sendTip(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in " .$this->lastTime. ".");
 				break;	
 			case 10:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in 0:10.");
+				$this->sendTip(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in 0:10.");
 				break;
 			case 0:
-				$this->sendToAll(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The deathmatch has started. May the best one win.");
+				$this->sendTip(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The deathmatch has started. May the best one win.");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -726,17 +667,17 @@ New Command: /hg stats
 			case 3:
 			case 4:
 			case 5:
-				$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Ending in " .$this->lastTime. ".");
+				$this->sendTip(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Ending in " .$this->lastTime. ".");
 				break;	
 			case 10:
-				$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:30.");
+				$this->sendTip(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:10.");
 				break;
 			//case 20:
 			case 30:
-				$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:30.");
+				$this->sendTip(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:30.");
 				break;
 			case 0:
-				$this->sendToAll(TextFormat::BLUE. "[{$this->getConfig()->get("prefix")}]The match has ended.");
+				$this->sendTip(TextFormat::BLUE. "[{$this->getConfig()->get("prefix")}]The match has ended.");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -771,10 +712,22 @@ New Command: /hg stats
 		EconomyAPI::getInstance()->setMoney($name,$money);
 		unset($name,$money);
 	}
+	public function seeMoney($name){
+		return PocketMoney::getInstance()->money($name);
+	}
+	
+	public function grantMoney($name,$money){
+		PocketMoney::getInstance()->grantMoney($name,$money);
+		unset($name,$money);
+	}
 	
 	public function resetChest()
 	{
 		ResetChest::getInstance()->ResetChest();
+	}
+	public function killRate()
+	{
+		KillRate::getInstance()->stats($pl,$money);
 	}
 	
 	public function clearChest()
@@ -800,7 +753,7 @@ New Command: /hg stats
 				$sign->setText(TextFormat::YELLOW. "[HG]","[Join]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
 				break;
 			case 2:
-				$sign->setText(TextFormat::YELLOW. "[HG]","[Grace]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
+				$sign->setText(TextFormat::YELLOW. "[HG]","[Running]","Players: ".count($this->players),"Time left: ".$this->lastTime." sec.");
 				break;
 			case 3:
 				$sign->setText(TextFormat::YELLOW. "[HG]","[Running]","Players: ".count($this->players)."/{$this->all}","Time before DM:".$this->lastTime."sec");
