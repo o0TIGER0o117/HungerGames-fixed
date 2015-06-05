@@ -52,6 +52,7 @@ class Main extends PluginBase implements Listener
 		}
 		$this->getServer()->getPluginManager()->registerEvents($this,$this);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this,"gameTimber"]),20);
+		$this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this,"onJoin"]),10);
 		@mkdir($this->getDataFolder(), 0777, true);
 		$this->points = new Config($this->getDataFolder()."points.yml", Config::YAML);
 		$this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML, array(
@@ -326,31 +327,21 @@ class Main extends PluginBase implements Listener
 				$this->pos24=new Vector3($this->pos24["x"]+0.5,$this->pos24["y"],$this->pos24["z"]+0.5);
 				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
 			}
-			if(!$this->config->exists("endTime"))
-			{
-				$this->config->set("endTime",600);
-			}
 			if(!$this->config->exists("gameTime"))
 			{
 				$this->config->set("gameTime",300);
-			}
-			if(!$this->config->exists("waitTime"))
-			{
-				$this->config->set("waitTime",180);
 			}
 			if(!$this->config->exists("prefix"))
 			{
 				$this->config->set("prefix","NULL[PLEASE SET THIS IN CONFIG.YML");
 			}
-			$this->endTime=(int)$this->config->get("endTime");//游戏时间
-			$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
-			$this->waitTime=(int)$this->config->get("waitTime");//等待时间
+			$this->gameTime=(int)$this->config->get("gameTime");//how long a match is
 			$this->prefix=(int)$this->config->get("prefix");
-			$this->gameStatus=0;//当前状态
-			$this->lastTime=0;//还没开始
-			$this->players=array();//加入游戏的玩家
-			$this->SetStatus=array();//设置状态
-			$this->all=0;//最大玩家数量
+			$this->gameStatus=0;//status of the game (sign)
+			$this->lastTime=0;//just a variable :P
+			$this->players=array();//players
+			$this->SetStatus=array();
+			$this->all=0;//
 			$this->config->save();
 			$sender->sendMessage(TextFormat::GREEN. "[HG]Config reloaded");
 			break;
@@ -361,16 +352,23 @@ class Main extends PluginBase implements Listener
 		return true;
 	}
 	
-public function onJoin(PlayerJoinEvent $event){
-	$money = EconomyAPI::getInstance()->myMoney($name);
-	$money = PocketMoney::getInstance()->money($name);
+public function onJoin ($player) {
+	foreach($this->players as $key=>$val)
+			{
+				$i++;
+				$p=$this->getServer()->getPlayer($val["id"]);
+	$money = EconomyAPI::getInstance()->myMoney($player);
+	$money = PocketMoney::getInstance()->money($player);
  foreach($this->players as $pl)
 		{
-			$this->getServer()->getPlayer($pl["id"])->sendTip($msg);
+			$this->getServer()->getPlayer($pl["id"])->sendTip();
 		}
-		$this->sendTip("Welcome To TitanuimPE!!! You Have" .$money. "!! Make Sure To Vote For Us
+		$p = sendTip("Welcome To TitanuimPE!!! You Have" .$money. "!! Make Sure To Vote For Us
 		And Buy VIP For Special Kits In HungerGames Matches!!" );
+		
 }
+}
+
 	
 	public function onPlace(BlockPlaceEvent $event)
 	{
