@@ -37,23 +37,20 @@ use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 
 class Main extends PluginBase implements Listener
-{
+{	
+	public $data;
 	
-	private static $obj = null;
-	public static function getInstance()
-	{
-		return self::$obj;
+	private static $object = null;
+	
+	public static function getInstance(){
+		return self::$object;
 	}
-	public function onEnable()
-	{
-		if(!self::$obj instanceof Main)
-		{
-			self::$obj = $this;
-		}
+
+	public function onEnable() {
+		$this->api = EconomyAPI::getInstance();
 		$this->getServer()->getPluginManager()->registerEvents($this,$this);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this,"gameTimber"]),20);
-		$this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this,"onJoin"]),10);
-		@mkdir($this->getDataFolder(), 0777, true);
+		@mkdir($this->getDataFolder() . "data/");
 		$this->points = new Config($this->getDataFolder()."points.yml", Config::YAML);
 		$this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML, array(
 		)); if($this->config->exists("lastpos"))
@@ -131,15 +128,15 @@ class Main extends PluginBase implements Listener
 			$this->config->set("waitTime",180);
 		}
 		
-		$this->endTime=(int)$this->config->get("endTime");//游戏时间
-		$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
-		$this->waitTime=(int)$this->config->get("waitTime");//等待时间
-		$this->prefix=(int)$this->config->get("prefix");//无敌时间
-		$this->gameStatus=0;//当前状态
-		$this->lastTime=0;//还没开始
-		$this->players=array();//加入游戏的玩家
-		$this->SetStatus=array();//设置状态
-		$this->all=0;//最大玩家数量
+		$this->endTime=(int)$this->config->get("endTime");//????
+		$this->gameTime=(int)$this->config->get("gameTime");//????
+		$this->waitTime=(int)$this->config->get("waitTime");//????
+		$this->prefix=(int)$this->config->get("prefix");//????
+		$this->gameStatus=0;//????
+		$this->lastTime=0;//????
+		$this->players=array();//???????
+		$this->SetStatus=array();//????
+		$this->all=0;//??????
 		$this->config->save();
 		$pm = $this->getServer()->getPluginManager();
 		if(!($this->money = $pm->getPlugin("EconomyAPI"))
@@ -174,13 +171,13 @@ class Main extends PluginBase implements Listener
 				$sender->setLevel($this->signlevel);
 				$sender->teleport($this->signlevel->getSpawnLocation());
 				$sender->sendMessage(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]Teleporting to lobby...");
-				$this->sendToAll(TextFormat::RED."[{$this->getConfig()->get("prefix")}]Player ".$sender->getName()." left the match.");
+				$event->getPlayer()->sendMessage(TextFormat::RED."[{$this->getConfig()->get("prefix")}]Player ".$sender->getName()." left the match.");
 				$this->changeStatusSign();
 				if($this->gameStatus==1 && count($this->players)<2)
 				{
 					$this->gameStatus=0;
 					$this->lastTime=0;
-					$this->sendToAll("[{$this->getConfig()->get("prefix")}]There aren't enough players. Countdown was stopped.");
+					$event->getPlayer()->sendMessage("[{$this->getConfig()->get("prefix")}]There aren't enough players. Countdown was stopped.");
 					/*foreach($this->players as $pl)
 					{
 						$p=$this->getServer()->getPlayer($pl["id"]);
@@ -264,7 +261,7 @@ class Main extends PluginBase implements Listener
 			$sender->sendMessage(TextFormat::GREEN . "[HG]Game settings successfully removed.");
 			break;
 		case "start":
-			$this->sendToAll(TextFormat::BLUE. "[HG]Match has been started forcefully.");
+			Server::getInstance()->broadcastMessage(TextFormat::BLUE. "[HG]Match has been started forcefully.");
 			$this->gameStatus=1;
 			$this->lastTime=5;
 			break;
@@ -352,24 +349,6 @@ class Main extends PluginBase implements Listener
 		return true;
 	}
 	
-public function onJoin ($player) {
-	foreach($this->players as $key=>$val)
-			{
-				$i++;
-				$p=$this->getServer()->getPlayer($val["id"]);
-	$money = EconomyAPI::getInstance()->myMoney($player);
-	$money = PocketMoney::getInstance()->money($player);
- foreach($this->players as $pl)
-		{
-			$this->getServer()->getPlayer($pl["id"])->sendTip();
-		}
-		$p = sendTip("Welcome To TitanuimPE!!! You Have" .$money. "!! Make Sure To Vote For Us
-		And Buy VIP For Special Kits In HungerGames Matches!!" );
-		
-}
-}
-
-	
 	public function onPlace(BlockPlaceEvent $event)
 	{
 		if(!isset($this->sign))
@@ -386,7 +365,6 @@ public function onJoin ($player) {
 		}
 		unset($block,$event);
 	}
-	
 	public function onMove(PlayerMoveEvent $event)
 	{
 		if(!isset($this->sign))
@@ -481,19 +459,19 @@ public function onJoin ($player) {
 				unset($this->players[$event->getEntity()->getName()]);
 				if(count($this->players)>1)
 				{
-					$this->sendTip("[{$this->getConfig()->get("prefix")}]{$event->getEntity()->getName()} died.");
-				$this->sendToAll("[{$this->getConfig()->get("prefix")}]Players left: ".count($this->players));
-					$this->sendToAll("[{$this->getConfig()->get("prefix")}]Time remaining: ".$this->lastTime." seconds.");
+					$this->sendMessage("[{$this->getConfig()->get("prefix")}]{$event->getEntity()->getName()} died.");
+				$event->getPlayer()->sendMessage("[{$this->getConfig()->get("prefix")}]Players left: ".count($this->players));
+					$event->getPlayer()->sendMessage("[{$this->getConfig()->get("prefix")}]Time remaining: ".$this->lastTime." seconds.");
 				}
 				$this->changeStatusSign();
 			}
 			
 		}
 	}
-	public function sendTip($msg){
+	public function sendMessage($msg){
 		foreach($this->players as $pl)
 		{
-			$this->getServer()->getPlayer($pl["id"])->sendTip($msg);
+			$this->getServer()->getPlayer($pl["id"])->sendMessage($msg);
 		}
 		$this->getServer()->getLogger()->info($msg);
 		unset($pl,$msg);
@@ -547,29 +525,29 @@ public function onJoin ($player) {
 			case 3:
 			case 4:
 			case 5:
-				$this->sendTip(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Starting in ".$this->lastTime.".");
+				$this->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Starting in ".$this->lastTime.".");
 				break;	
 			case 10:
-				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 0:10.");
+				$this->sendMessage(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 0:10.");
 				break;
 			case 30:
-				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 0:30.");
+				$this->sendMessage(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 0:30.");
 				break;
 			case 60:
-				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 1:00.");
+				$this->sendMessage(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 1:00.");
 				break;
 			case 90:
-				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 1:30.");
+				$this->sendMessage(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 1:30.");
 				break;
 			case 120:
-				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 2:00.");
+				$this->sendMessage(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 2:00.");
 				break;
 			case 150:
-				$this->sendTip(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 2:30.");
+				$this->sendMessage(TextFormat::RED."[{$this->getConfig()->get("prefix")}]The match will start in 2:30.");
 				break;
 			case 0:
 				$this->gameStatus=2;
-				$this->sendTip(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]The Games Have Begun!!!.
+				$this->sendMessage(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]The Games Have Begun!!!.
 				***WARNING: THERE IS NO GRACE TIME***");
 				$this->resetChest();
 				foreach($this->players as $key=>$val)
@@ -589,7 +567,7 @@ public function onJoin ($player) {
 			if($this->lastTime<=0)
 			{
 				$this->gameStatus=3;
-				$this->sendTip(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}] CHEST HAVE RESET");
+				$this->sendMessage(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}] CHEST HAVE RESET");
 				$this->lastTime=$this->gameTime;
 				$this->resetChest();
 			}
@@ -598,7 +576,7 @@ public function onJoin ($player) {
 		{
 			if(count($this->players)==1)
 			{
-				$event->getPlayer()->sendTip(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]Congratulations! You have won the game.");
+				$event->getPlayer()->sendMessage(TextFormat::GREEN."[{$this->getConfig()->get("prefix")}]Congratulations! You have won the game.");
 				foreach($this->players as &$pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -636,13 +614,13 @@ public function onJoin ($player) {
 			case 3:
 			case 4:
 			case 5:
-				$this->sendTip(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in " .$this->lastTime. ".");
+				$this->sendMessage(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in " .$this->lastTime. ".");
 				break;	
 			case 10:
-				$this->sendTip(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in 0:10.");
+				$this->sendMessage(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]Deathmatch will start in 0:10.");
 				break;
 			case 0:
-				$this->sendTip(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The deathmatch has started. May the best one win.");
+				$this->sendMessage(TextFormat::YELLOW."[{$this->getConfig()->get("prefix")}]The deathmatch has started. May the best one win.");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -665,17 +643,17 @@ public function onJoin ($player) {
 			case 3:
 			case 4:
 			case 5:
-				$this->sendTip(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Ending in " .$this->lastTime. ".");
+				$this->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]Ending in " .$this->lastTime. ".");
 				break;	
 			case 10:
-				$this->sendTip(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:10.");
+				$this->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:10.");
 				break;
 			//case 20:
 			case 30:
-				$this->sendTip(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:30.");
+				$this->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]The match will end in 0:30.");
 				break;
 			case 0:
-				$this->sendTip(TextFormat::BLUE. "[{$this->getConfig()->get("prefix")}]The match has ended.");
+				$this->sendMessage(TextFormat::BLUE. "[{$this->getConfig()->get("prefix")}]The match has ended.");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
@@ -1159,18 +1137,18 @@ public function onJoin ($player) {
 							$event->getPlayer()->sendMessage("[{$this->getConfig()->get("prefix")}]The match is full.");
 							return;
 						}
-						$this->sendToAll("[{$this->getConfig()->get("prefix")}]" .$event->getPlayer()->getName(). " joined the match.");
+						$event->getPlayer()->sendMessage("[{$this->getConfig()->get("prefix")}]" .$event->getPlayer()->getName(). " joined the match.");
 						$this->players[$event->getPlayer()->getName()]=array("id"=>$event->getPlayer()->getName());
 						$event->getPlayer()->sendMessage(TextFormat::BLUE. "[{$this->getConfig()->get("prefix")}]You have joined the match!");
 						if($this->gameStatus==0 && count($this->players)>=2)
 						{
 							$this->gameStatus=1;
 							$this->lastTime=$this->waitTime;
-							$this->sendToAll(TextFormat::YELLOW. "[{$this->getConfig()->get("prefix")}]The game will countdown when a low amount of players are in");
+							$event->getPlayer()->sendMessage(TextFormat::YELLOW. "[{$this->getConfig()->get("prefix")}]The game will countdown when a low amount of players are in");
 						}
 						if(count($this->players)==8 && $this->gameStatus==1 && $this->lastTime>5)
 						{
-							$this->sendToAll(TextFormat::GREEN. "[{$this->getConfig()->get("prefix")}]The match is already full. Starting the match.");
+							$event->getPlayer()->sendMessage(TextFormat::GREEN. "[{$this->getConfig()->get("prefix")}]The match is already full. Starting the match.");
 							$this->lastTime=5;
 						}
 						$this->changeStatusSign();
@@ -1224,13 +1202,13 @@ public function onJoin ($player) {
 		{	
 			unset($this->players[$event->getPlayer()->getName()]);
 			$this->ClearInv($event->getPlayer());
-			$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]".$event->getPlayer()->getName()." left the match.");
+			$event->getPlayer()->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]".$event->getPlayer()->getName()." left the match.");
 			$this->changeStatusSign();
 			if($this->gameStatus==1 && count($this->players)<2)
 			{
 				$this->gameStatus=0;
 				$this->lastTime=0;
-				$this->sendToAll(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]There aren't enough players. Countdown has stopped.");
+				$event->getPlayer()->sendMessage(TextFormat::RED. "[{$this->getConfig()->get("prefix")}]There aren't enough players. Countdown has stopped.");
 				/*foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
